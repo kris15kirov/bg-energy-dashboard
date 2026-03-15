@@ -38,7 +38,8 @@ export class DataService {
 
             const now = new Date();
             const from = formatDate(subDays(now, 7));
-            const to = formatDate(addDays(now, 1)); // tomorrow (day-ahead)
+            const tomorrow = addDays(now, 1);
+            const to = formatDate(tomorrow);
 
             console.log(`[DataService] Fetching IBEX DAM data from ${from} to ${to}...`);
             const rawData = await fetchDAMRange(from, to);
@@ -48,10 +49,16 @@ export class DataService {
                 return false;
             }
 
+            // Store the raw response for the latest day (for the IBEX table)
+            const lastDay = rawData[rawData.length - 1];
+            if (lastDay && lastDay.main_data) {
+                this._latestDAMRaw = lastDay;
+                this._deliveryDate = lastDay.date || formatDate(tomorrow);
+            }
+
             ibexSpotData = transformDAMToSpotSeries(rawData);
 
             if (ibexSpotData.timestamps.length > 0) {
-                // Merge IBEX spot data into the data structure
                 this._mergeIBEXSpot();
                 isLive = true;
                 console.log(`[DataService] ✓ Loaded ${ibexSpotData.timestamps.length} real IBEX hourly prices`);
@@ -111,6 +118,8 @@ export class DataService {
             : this.data.lastUpdated;
     }
     getIBEXSummaries() { return this.ibexSummaries || []; }
+    getLatestDAMRaw() { return this._latestDAMRaw || null; }
+    getDeliveryDate() { return this._deliveryDate || null; }
 
     getSeries(key) {
         return this.data.data[key] || null;

@@ -9,6 +9,7 @@ import './styles/components.css';
 import './styles/charts.css';
 import './styles/table.css';
 import './styles/animations.css';
+import './styles/ibex-table.css';
 
 import { createTopNav } from './components/TopNav.js';
 import { createSidebar, updateSidebarActive } from './components/Sidebar.js';
@@ -16,6 +17,7 @@ import { createFilterBar } from './components/FilterBar.js';
 import { TimeSeriesChart } from './components/TimeSeriesChart.js';
 import { createCommentary } from './components/Commentary.js';
 import { createDataTable } from './components/DataTable.js';
+import { createIbexDamTable, scheduleIbexAutoRefresh } from './components/IbexDamTable.js';
 import { DataService } from './data/dataService.js';
 import { CHART_CONFIGS, MODELS } from './data/constants.js';
 
@@ -77,6 +79,11 @@ async function init() {
 
     // Try to load live IBEX data (falls back to mock silently)
     await dataService.initLiveData();
+
+    // Schedule auto-refresh at 14:15 EET
+    if (dataService.isLive()) {
+        scheduleIbexAutoRefresh();
+    }
 
     // Render current view
     renderView();
@@ -192,6 +199,11 @@ function renderOverview(tabsContainer, scrollArea) {
         });
         charts.push(chart);
     }
+
+    // IBEX DAM Table (above commentary)
+    const damRaw = dataService.getLatestDAMRaw();
+    const deliveryDate = dataService.getDeliveryDate();
+    commentaryCol.appendChild(createIbexDamTable(damRaw, deliveryDate));
 
     // Commentary
     commentaryCol.appendChild(createCommentary(dataService.getNow(), dataService.getLastUpdated()));

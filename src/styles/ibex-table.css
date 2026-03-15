@@ -1,0 +1,286 @@
+/* ═══════════════════════════════════════════════════════
+   BG Energy Dashboard — IBEX DAM Table Styles
+   ═══════════════════════════════════════════════════════ */
+
+.ibex-table {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-lg);
+    overflow: hidden;
+    margin-bottom: var(--space-md);
+}
+
+/* ── Header ──────────────────────────────────────────── */
+
+.ibex-table__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-sm) var(--space-md);
+    border-bottom: 1px solid var(--border-color);
+    background: var(--bg-secondary);
+}
+
+.ibex-table__title {
+    font-size: var(--fs-sm);
+    font-weight: var(--fw-semi);
+    color: var(--text-heading);
+    margin: 0;
+}
+
+.ibex-table__badge {
+    font-size: 10px;
+    font-weight: var(--fw-bold);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 2px 8px;
+    border-radius: 10px;
+}
+
+.ibex-table__badge--live {
+    color: #0f0;
+    background: rgba(0, 255, 0, 0.1);
+    border: 1px solid rgba(0, 255, 0, 0.3);
+}
+
+.ibex-table__badge--offline {
+    color: var(--text-muted);
+    background: var(--bg-hover);
+    border: 1px solid var(--border-color);
+}
+
+.ibex-table__badge--refreshing {
+    color: var(--accent-gfs);
+    background: rgba(10, 189, 227, 0.1);
+    border: 1px solid rgba(10, 189, 227, 0.3);
+    animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.5;
+    }
+}
+
+/* ── Date & Refresh ──────────────────────────────────── */
+
+.ibex-table__date {
+    padding: var(--space-xs) var(--space-md);
+    font-size: var(--fs-xs);
+    color: var(--text-secondary);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.ibex-table__date-label {
+    color: var(--text-muted);
+    margin-right: var(--space-xs);
+}
+
+.ibex-table__date-value {
+    color: var(--text-heading);
+    font-weight: var(--fw-medium);
+}
+
+.ibex-table__refresh-info {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-xs) var(--space-md);
+    font-size: 11px;
+    color: var(--text-muted);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.ibex-table__refresh-btn {
+    background: none;
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    font-size: var(--fs-md);
+    cursor: pointer;
+    padding: 2px 6px;
+    border-radius: var(--border-radius-sm);
+    transition: all var(--transition-fast);
+    line-height: 1;
+}
+
+.ibex-table__refresh-btn:hover {
+    color: var(--accent-gfs);
+    border-color: var(--accent-gfs);
+    transform: rotate(180deg);
+}
+
+/* ── Summary ─────────────────────────────────────────── */
+
+.ibex-table__summary {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    background: var(--border-color);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.ibex-table__summary-item {
+    background: var(--bg-card);
+    padding: var(--space-sm) var(--space-md);
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.ibex-table__summary-label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--text-muted);
+}
+
+.ibex-table__summary-value {
+    font-size: var(--fs-lg);
+    font-weight: var(--fw-bold);
+    color: var(--text-heading);
+    font-variant-numeric: tabular-nums;
+}
+
+.ibex-table__summary-unit {
+    font-size: 10px;
+    color: var(--text-muted);
+}
+
+/* ── Tabs ────────────────────────────────────────────── */
+
+.ibex-table__tabs {
+    display: flex;
+    border-bottom: 1px solid var(--border-color);
+    background: var(--bg-secondary);
+}
+
+.ibex-table__tab {
+    flex: 1;
+    padding: var(--space-xs) var(--space-sm);
+    font-size: var(--fs-xs);
+    font-weight: var(--fw-medium);
+    color: var(--text-secondary);
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    text-align: center;
+}
+
+.ibex-table__tab:hover {
+    color: var(--text-primary);
+    background: var(--bg-hover);
+}
+
+.ibex-table__tab--active {
+    color: var(--accent-gfs);
+    border-bottom-color: var(--accent-gfs);
+}
+
+/* ── Panels ──────────────────────────────────────────── */
+
+.ibex-table__panel {
+    display: none;
+}
+
+.ibex-table__panel--active {
+    display: block;
+}
+
+.ibex-table__scroll {
+    max-height: 420px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border-color) transparent;
+}
+
+.ibex-table__scroll::-webkit-scrollbar {
+    width: 5px;
+}
+
+.ibex-table__scroll::-webkit-scrollbar-thumb {
+    background: var(--border-color);
+    border-radius: 3px;
+}
+
+/* ── Table ───────────────────────────────────────────── */
+
+.ibex-table__table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--fs-xs);
+    font-variant-numeric: tabular-nums;
+}
+
+.ibex-table__table thead {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+}
+
+.ibex-table__table th {
+    padding: 6px var(--space-sm);
+    font-weight: var(--fw-semi);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-muted);
+    background: var(--bg-secondary);
+    text-align: right;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.ibex-table__table th:first-child {
+    text-align: left;
+}
+
+.ibex-table__table td {
+    padding: 4px var(--space-sm);
+    color: var(--text-secondary);
+    text-align: right;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+.ibex-table__table td:first-child {
+    text-align: left;
+    color: var(--text-muted);
+    font-weight: var(--fw-medium);
+}
+
+.ibex-table__table tbody tr:hover {
+    background: var(--bg-hover);
+}
+
+/* Hour group separators — every 4th QH row */
+.ibex-table__table tbody tr:nth-child(4n) {
+    border-bottom: 1px solid var(--border-color);
+}
+
+/* ── Color coding ────────────────────────────────────── */
+
+.ibex-cell--high {
+    color: var(--color-negative) !important;
+    font-weight: var(--fw-semi);
+}
+
+.ibex-cell--low {
+    color: var(--color-positive) !important;
+    font-weight: var(--fw-semi);
+}
+
+/* ── Empty state ─────────────────────────────────────── */
+
+.ibex-table__empty {
+    padding: var(--space-xl) var(--space-md);
+    text-align: center;
+    color: var(--text-muted);
+    font-size: var(--fs-sm);
+    line-height: 1.6;
+}

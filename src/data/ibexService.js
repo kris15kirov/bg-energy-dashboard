@@ -13,6 +13,16 @@
 const PROXY_BASE = '/api';
 
 /**
+ * Fetch DAM data for a single date
+ * @param {string} date - YYYY-MM-DD
+ */
+export async function fetchDAMData(date) {
+    const res = await fetch(`${PROXY_BASE}/dam?date=${date}`);
+    if (!res.ok) throw new Error(`IBEX API error: ${res.status}`);
+    return res.json();
+}
+
+/**
  * Fetch DAM data for a date range
  */
 export async function fetchDAMRange(from, to) {
