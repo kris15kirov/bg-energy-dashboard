@@ -1,0 +1,139 @@
+/* ═══════════════════════════════════════════════════════
+   BG Energy Dashboard — Animations
+   ═══════════════════════════════════════════════════════ */
+
+@keyframes fadeIn {
+    from {
+        opacity: 0.3;
+        transform: translateY(6px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-16px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes pulseGlow {
+
+    0%,
+    100% {
+        box-shadow: 0 0 0 0 rgba(10, 189, 227, 0.3);
+    }
+
+    50% {
+        box-shadow: 0 0 12px 4px rgba(10, 189, 227, 0.15);
+    }
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: -200px 0;
+    }
+
+    100% {
+        background-position: 200px 0;
+    }
+}
+
+.animate-fade-in {
+    animation: fadeIn var(--transition-base) ease forwards;
+}
+
+.animate-slide-in {
+    animation: slideInLeft var(--transition-base) ease forwards;
+}
+
+/* ── Loading Skeleton ─────────────────────────────────── */
+.skeleton {
+    background: linear-gradient(90deg,
+            var(--bg-card) 25%,
+            var(--bg-hover) 50%,
+            var(--bg-card) 75%);
+    background-size: 400px 100%;
+    animation: shimmer 1.5s infinite;
+    border-radius: var(--border-radius-sm);
+}
+
+.skeleton--bar {
+    height: 12px;
+    margin-bottom: var(--space-sm);
+}
+
+.skeleton--chart {
+    height: 200px;
+    margin-bottom: var(--space-md);
+}
+
+/* ── Chart card stagger animation ─────────────────────── */
+.chart-card {
+    animation: fadeIn var(--transition-slow) ease both;
+}
+
+.chart-card:nth-child(1) {
+    animation-delay: 50ms;
+}
+
+.chart-card:nth-child(2) {
+    animation-delay: 100ms;
+}
+
+.chart-card:nth-child(3) {
+    animation-delay: 150ms;
+}
+
+.chart-card:nth-child(4) {
+    animation-delay: 200ms;
+}
+
+.chart-card:nth-child(5) {
+    animation-delay: 250ms;
+}
+
+.chart-card:nth-child(6) {
+    animation-delay: 300ms;
+}
+
+.chart-card:nth-child(7) {
+    animation-delay: 350ms;
+}
+
+.chart-card:nth-child(8) {
+    animation-delay: 400ms;
+}
+
+.chart-card:nth-child(9) {
+    animation-delay: 450ms;
+}
+
+.chart-card:nth-child(10) {
+    animation-delay: 500ms;
+}
+
+.chart-card:nth-child(11) {
+    animation-delay: 550ms;
+}
+
+.chart-card:nth-child(12) {
+    animation-delay: 600ms;
+}
+
+.chart-card:nth-child(13) {
+    animation-delay: 650ms;
+}
+
+.chart-card:nth-child(14) {
+    animation-delay: 700ms;
+}

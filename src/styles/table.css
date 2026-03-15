@@ -1,0 +1,20 @@
+/* ═══════════════════════════════════════════════════════
+   BG Energy Dashboard — Table-specific Styles
+   ═══════════════════════════════════════════════════════ */
+
+.table-view {
+    padding: var(--space-md) 0;
+}
+
+.table-view__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--space-md);
+}
+
+.table-view__title {
+    font-size: var(--fs-lg);
+    font-weight: var(--fw-semi);
+    color: var(--text-heading);
+}

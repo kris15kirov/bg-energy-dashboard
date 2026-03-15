@@ -1,0 +1,265 @@
+/* ═══════════════════════════════════════════════════════
+   BG Energy Dashboard — App Layout
+   ═══════════════════════════════════════════════════════ */
+
+/* ── App Shell ────────────────────────────────────────── */
+#app {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden;
+}
+
+/* ── Top Nav ──────────────────────────────────────────── */
+.top-nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: var(--nav-height);
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    padding: 0 var(--space-md);
+    z-index: 100;
+    gap: var(--space-xs);
+}
+
+.top-nav__logo {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    font-size: var(--fs-lg);
+    font-weight: var(--fw-bold);
+    color: var(--text-heading);
+    margin-right: var(--space-lg);
+    white-space: nowrap;
+}
+
+.top-nav__logo-icon {
+    width: 28px;
+    height: 28px;
+    background: linear-gradient(135deg, var(--accent-gfs), var(--accent-iconsr));
+    border-radius: var(--border-radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: var(--fw-bold);
+    font-size: var(--fs-sm);
+    color: #fff;
+}
+
+.top-nav__modules {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    flex: 1;
+}
+
+.top-nav__module {
+    padding: var(--space-sm) var(--space-md);
+    font-size: var(--fs-sm);
+    font-weight: var(--fw-medium);
+    color: var(--text-secondary);
+    border-radius: var(--border-radius-sm);
+    transition: all var(--transition-fast);
+    white-space: nowrap;
+    position: relative;
+}
+
+.top-nav__module:hover {
+    color: var(--text-primary);
+    background: var(--bg-hover);
+}
+
+.top-nav__module--active {
+    color: var(--text-heading);
+}
+
+.top-nav__module--active::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: var(--space-md);
+    right: var(--space-md);
+    height: 2px;
+    background: var(--accent-gfs);
+    border-radius: 1px;
+}
+
+.top-nav__right {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    margin-left: auto;
+}
+
+.top-nav__settings {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--bg-hover);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--fs-lg);
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    border: 1px solid var(--border-color);
+}
+
+.top-nav__settings:hover {
+    color: var(--text-heading);
+    background: var(--bg-card-hover);
+    transform: rotate(45deg);
+}
+
+/* ── App Body (below nav) ────────────────────────────── */
+.app-body {
+    display: flex;
+    margin-top: var(--nav-height);
+    height: calc(100vh - var(--nav-height));
+    overflow: hidden;
+}
+
+/* ── Sidebar ──────────────────────────────────────────── */
+.sidebar {
+    width: var(--sidebar-width);
+    min-width: var(--sidebar-width);
+    background: var(--bg-secondary);
+    border-right: 1px solid var(--border-color);
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-bottom: var(--space-xl);
+    flex-shrink: 0;
+}
+
+.sidebar__group {
+    margin-bottom: var(--space-xs);
+}
+
+.sidebar__group-label {
+    font-size: var(--fs-xs);
+    font-weight: var(--fw-semi);
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    color: var(--text-muted);
+    padding: var(--space-md) var(--space-md) var(--space-xs);
+}
+
+.sidebar__item {
+    display: flex;
+    align-items: center;
+    padding: 6px var(--space-md);
+    font-size: var(--fs-sm);
+    color: var(--text-secondary);
+    cursor: pointer;
+    border-left: 3px solid transparent;
+    transition: all var(--transition-fast);
+    user-select: none;
+}
+
+.sidebar__item:hover {
+    color: var(--text-primary);
+    background: var(--bg-hover);
+}
+
+.sidebar__item--active {
+    color: var(--text-heading);
+    background: rgba(10, 189, 227, 0.08);
+    border-left-color: var(--accent-gfs);
+}
+
+/* ── Main Content Area ────────────────────────────────── */
+.main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    min-width: 0;
+}
+
+.content-scroll {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 0 var(--space-lg) var(--space-xl);
+}
+
+/* ── Content with Right Sidebar ───────────────────────── */
+.content-with-sidebar {
+    display: flex;
+    gap: var(--space-lg);
+    min-height: 0;
+}
+
+.content-with-sidebar .charts-column {
+    flex: 1;
+    min-width: 0;
+}
+
+.content-with-sidebar .commentary-column {
+    width: var(--right-sidebar);
+    min-width: var(--right-sidebar);
+    flex-shrink: 0;
+}
+
+/* ── Content Tabs ─────────────────────────────────────── */
+.content-tabs {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    border-bottom: 1px solid var(--border-color);
+    padding: 0 var(--space-lg);
+    background: var(--bg-primary);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.content-tab {
+    padding: var(--space-md) var(--space-lg);
+    font-size: var(--fs-md);
+    font-weight: var(--fw-medium);
+    color: var(--text-secondary);
+    border-bottom: 2px solid transparent;
+    transition: all var(--transition-fast);
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.content-tab:hover {
+    color: var(--text-primary);
+}
+
+.content-tab--active {
+    color: var(--accent-gfs);
+    border-bottom-color: var(--accent-gfs);
+}
+
+/* ── Section Titles ───────────────────────────────────── */
+.section-title {
+    font-size: var(--fs-xl);
+    font-weight: var(--fw-semi);
+    color: var(--text-heading);
+    padding: var(--space-lg) 0 var(--space-md);
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+}
+
+.section-title__icon {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--bg-hover);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--fs-xs);
+    color: var(--text-muted);
+    cursor: help;
+}

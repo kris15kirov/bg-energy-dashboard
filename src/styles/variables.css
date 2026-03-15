@@ -1,0 +1,106 @@
+/* ═══════════════════════════════════════════════════════
+   BG Energy Dashboard — Design Tokens
+   ═══════════════════════════════════════════════════════ */
+
+:root {
+  /* ── Background Colors ──────────────────────────────── */
+  --bg-primary:       #0c0c1d;
+  --bg-secondary:     #111128;
+  --bg-card:          #151533;
+  --bg-card-hover:    #1a1a3e;
+  --bg-surface:       #1e1e42;
+  --bg-hover:         #252550;
+  --bg-active:        #2a2a5c;
+  --bg-input:         #12122a;
+  --bg-banner:        rgba(29, 209, 161, 0.12);
+
+  /* ── Text Colors ────────────────────────────────────── */
+  --text-primary:     #e8e8f0;
+  --text-secondary:   #9090aa;
+  --text-muted:       #5c5c78;
+  --text-heading:     #ffffff;
+  --text-inverse:     #0c0c1d;
+
+  /* ── Accent Colors (Chart Lines) ────────────────────── */
+  --accent-actual:    #ff9f43;
+  --accent-ec:        #f368e0;
+  --accent-ecsr:      #c44dcc;
+  --accent-gfs:       #0abde3;
+  --accent-icon:      #feca57;
+  --accent-iconsr:    #10ac84;
+
+  /* ── Semantic Colors ────────────────────────────────── */
+  --color-positive:   #2ed573;
+  --color-negative:   #ee5a6f;
+  --color-warning:    #ffa502;
+  --color-info:       #3498db;
+  --color-bull:       #2ed573;
+  --color-bear:       #ee5a6f;
+
+  /* ── UI Colors ──────────────────────────────────────── */
+  --border-color:     #2a2a4a;
+  --border-light:     #353560;
+  --divider:          #1e1e3e;
+  --scrollbar-thumb:  #3a3a5c;
+  --scrollbar-track:  #151530;
+  --trial-banner-bg:  #1dd1a1;
+  --trial-banner-text:#0c0c1d;
+
+  /* ── Pill / Toggle Colors ───────────────────────────── */
+  --pill-bg:          #1e1e42;
+  --pill-bg-active:   #3a3a6a;
+  --pill-text:        #9090aa;
+  --pill-text-active: #ffffff;
+
+  /* ── Shadows ────────────────────────────────────────── */
+  --shadow-sm:   0 1px 3px rgba(0,0,0,0.4);
+  --shadow-md:   0 4px 12px rgba(0,0,0,0.5);
+  --shadow-lg:   0 8px 32px rgba(0,0,0,0.6);
+  --shadow-glow: 0 0 20px rgba(15, 15, 40, 0.8);
+
+  /* ── Spacing ────────────────────────────────────────── */
+  --space-xs:   4px;
+  --space-sm:   8px;
+  --space-md:   16px;
+  --space-lg:   24px;
+  --space-xl:   32px;
+  --space-2xl:  48px;
+
+  /* ── Typography ─────────────────────────────────────── */
+  --font-family:   'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-mono:     'JetBrains Mono', 'Fira Code', monospace;
+
+  --fs-xs:    0.6875rem;  /* 11px */
+  --fs-sm:    0.75rem;    /* 12px */
+  --fs-base:  0.8125rem;  /* 13px */
+  --fs-md:    0.875rem;   /* 14px */
+  --fs-lg:    1rem;       /* 16px */
+  --fs-xl:    1.25rem;    /* 20px */
+  --fs-2xl:   1.5rem;     /* 24px */
+  --fs-3xl:   1.875rem;   /* 30px */
+
+  --fw-normal:  400;
+  --fw-medium:  500;
+  --fw-semi:    600;
+  --fw-bold:    700;
+
+  --lh-tight:   1.2;
+  --lh-normal:  1.5;
+  --lh-relaxed: 1.7;
+
+  /* ── Layout ─────────────────────────────────────────── */
+  --nav-height:     52px;
+  --sidebar-width:  200px;
+  --right-sidebar:  380px;
+  --filter-height:  48px;
+  --border-radius:  6px;
+  --border-radius-sm: 4px;
+  --border-radius-lg: 10px;
+  --border-radius-pill: 100px;
+
+  /* ── Transitions ────────────────────────────────────── */
+  --transition-fast:   150ms ease;
+  --transition-base:   250ms ease;
+  --transition-slow:   400ms ease;
+  --transition-spring: 300ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
