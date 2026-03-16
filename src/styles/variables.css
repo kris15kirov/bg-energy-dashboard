@@ -2,24 +2,24 @@
    BG Energy Dashboard — Design Tokens
    ═══════════════════════════════════════════════════════ */
 
-:root {
-  /* ── Background Colors ──────────────────────────────── */
-  --bg-primary:       #0c0c1d;
-  --bg-secondary:     #111128;
-  --bg-card:          #151533;
-  --bg-card-hover:    #1a1a3e;
-  --bg-surface:       #1e1e42;
-  --bg-hover:         #252550;
-  --bg-active:        #2a2a5c;
-  --bg-input:         #12122a;
-  --bg-banner:        rgba(29, 209, 161, 0.12);
+:root, [data-theme="light"] {
+  /* ── Background Colors (Light) ──────────────────────── */
+  --bg-primary:       #f5f7f9;
+  --bg-secondary:     #ffffff;
+  --bg-card:          #ffffff;
+  --bg-card-hover:    #f8fafc;
+  --bg-surface:       #ffffff;
+  --bg-hover:         #e2e8f0;
+  --bg-active:        #cbd5e1;
+  --bg-input:         #f1f5f9;
+  --bg-banner:        rgba(46, 213, 115, 0.15);
 
-  /* ── Text Colors ────────────────────────────────────── */
-  --text-primary:     #e8e8f0;
-  --text-secondary:   #9090aa;
-  --text-muted:       #5c5c78;
-  --text-heading:     #ffffff;
-  --text-inverse:     #0c0c1d;
+  /* ── Text Colors (Light) ────────────────────────────── */
+  --text-primary:     #1e293b;
+  --text-secondary:   #475569;
+  --text-muted:       #64748b;
+  --text-heading:     #0f172a;
+  --text-inverse:     #ffffff;
 
   /* ── Accent Colors (Chart Lines) ────────────────────── */
   --accent-actual:    #ff9f43;
@@ -37,27 +37,70 @@
   --color-bull:       #2ed573;
   --color-bear:       #ee5a6f;
 
-  /* ── UI Colors ──────────────────────────────────────── */
-  --border-color:     #2a2a4a;
-  --border-light:     #353560;
-  --divider:          #1e1e3e;
-  --scrollbar-thumb:  #3a3a5c;
-  --scrollbar-track:  #151530;
-  --trial-banner-bg:  #1dd1a1;
-  --trial-banner-text:#0c0c1d;
+  /* ── UI Colors (Light) ──────────────────────────────── */
+  --border-color:     #e2e8f0;
+  --border-light:     #cbd5e1;
+  --divider:          #f1f5f9;
+  --scrollbar-thumb:  #cbd5e1;
+  --scrollbar-track:  #f8fafc;
+  --trial-banner-bg:  #2ed573;
+  --trial-banner-text:#ffffff;
 
-  /* ── Pill / Toggle Colors ───────────────────────────── */
-  --pill-bg:          #1e1e42;
-  --pill-bg-active:   #3a3a6a;
-  --pill-text:        #9090aa;
+  /* ── Pill / Toggle Colors (Light) ───────────────────── */
+  --pill-bg:          #f1f5f9;
+  --pill-bg-active:   #2ed573;
+  --pill-text:        #64748b;
   --pill-text-active: #ffffff;
 
-  /* ── Shadows ────────────────────────────────────────── */
+  /* ── Shadows (Light) ────────────────────────────────── */
+  --shadow-sm:   0 1px 2px rgba(0,0,0,0.05);
+  --shadow-md:   0 4px 6px -1px rgba(0,0,0,0.1);
+  --shadow-lg:   0 10px 15px -3px rgba(0,0,0,0.1);
+  --shadow-glow: 0 0 15px rgba(46, 213, 115, 0.3);
+}
+
+[data-theme="dark"] {
+  /* ── Background Colors (Dark Green ecoCalc style) ───── */
+  --bg-primary:       #0a1811;
+  --bg-secondary:     #0f2218;
+  --bg-card:          #142a1e;
+  --bg-card-hover:    #193526;
+  --bg-surface:       #183022;
+  --bg-hover:         #20402d;
+  --bg-active:        #29523a;
+  --bg-input:         #0e2017;
+  --bg-banner:        rgba(46, 213, 115, 0.12);
+
+  /* ── Text Colors (Dark) ─────────────────────────────── */
+  --text-primary:     #e2e8f0;
+  --text-secondary:   #94a3b8;
+  --text-muted:       #64748b;
+  --text-heading:     #f8fafc;
+  --text-inverse:     #0a1811;
+
+  /* ── UI Colors (Dark) ───────────────────────────────── */
+  --border-color:     #244531;
+  --border-light:     #2e573e;
+  --divider:          #1b3324;
+  --scrollbar-thumb:  #2e573e;
+  --scrollbar-track:  #0f2218;
+  --trial-banner-bg:  #1dd1a1;
+  --trial-banner-text:#0a1811;
+
+  /* ── Pill / Toggle Colors (Dark) ────────────────────── */
+  --pill-bg:          #183022;
+  --pill-bg-active:   #2e573e;
+  --pill-text:        #94a3b8;
+  --pill-text-active: #ffffff;
+
+  /* ── Shadows (Dark) ─────────────────────────────────── */
   --shadow-sm:   0 1px 3px rgba(0,0,0,0.4);
   --shadow-md:   0 4px 12px rgba(0,0,0,0.5);
   --shadow-lg:   0 8px 32px rgba(0,0,0,0.6);
-  --shadow-glow: 0 0 20px rgba(15, 15, 40, 0.8);
+  --shadow-glow: 0 0 20px rgba(46, 213, 115, 0.2);
+}
 
+:root {
   /* ── Spacing ────────────────────────────────────────── */
   --space-xs:   4px;
   --space-sm:   8px;

@@ -43,6 +43,15 @@ export function createNowLine(nowDate) {
 }
 
 export function getBaseChartOptions(unit) {
+    const style = getComputedStyle(document.documentElement);
+    const getVar = (name, fallback) => style.getPropertyValue(name).trim() || fallback;
+    
+    const textColor = getVar('--text-muted', '#5c5c78');
+    const titleColor = getVar('--text-primary', '#e8e8f0');
+    const gridColor = getVar('--border-color', 'rgba(255,255,255,0.04)');
+    const tooltipBg = getVar('--bg-secondary', 'rgba(15, 15, 30, 0.95)');
+    const tooltipBorder = getVar('--border-light', 'rgba(255,255,255,0.1)');
+
     return {
         responsive: true,
         maintainAspectRatio: false,
@@ -57,10 +66,10 @@ export function getBaseChartOptions(unit) {
         plugins: {
             legend: { display: false },
             tooltip: {
-                backgroundColor: 'rgba(15, 15, 30, 0.95)',
-                titleColor: '#e8e8f0',
-                bodyColor: '#9090aa',
-                borderColor: 'rgba(255,255,255,0.1)',
+                backgroundColor: tooltipBg,
+                titleColor: titleColor,
+                bodyColor: textColor,
+                borderColor: tooltipBorder,
                 borderWidth: 1,
                 padding: 10,
                 bodyFont: { family: 'Inter', size: 11 },
@@ -91,11 +100,11 @@ export function getBaseChartOptions(unit) {
                     displayFormats: { day: 'd MMM', hour: 'HH:mm' },
                 },
                 grid: {
-                    color: 'rgba(255,255,255,0.04)',
+                    color: gridColor,
                     drawBorder: false,
                 },
                 ticks: {
-                    color: '#5c5c78',
+                    color: textColor,
                     font: { family: 'Inter', size: 10 },
                     maxTicksLimit: 14,
                 },
@@ -103,11 +112,11 @@ export function getBaseChartOptions(unit) {
             },
             y: {
                 grid: {
-                    color: 'rgba(255,255,255,0.04)',
+                    color: gridColor,
                     drawBorder: false,
                 },
                 ticks: {
-                    color: '#5c5c78',
+                    color: textColor,
                     font: { family: 'Inter', size: 10 },
                     maxTicksLimit: 6,
                 },

@@ -24,6 +24,7 @@ export const SIDEBAR_NAV = [
             { id: 'spot-exchange', label: 'Spot & Exchange' },
             { id: 'balancing', label: 'Balancing' },
             { id: 'capture-prices', label: 'Capture Prices' },
+            { id: 'qh-monthly-stats', label: 'QH Monthly Stats' },
         ]
     },
     {

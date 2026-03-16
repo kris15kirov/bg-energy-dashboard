@@ -93,6 +93,27 @@ export class TimeSeriesChart {
         this.chart.update('none');
     }
 
+    updateTheme() {
+        if (!this.chart || !this.cardEl) return;
+        const canvas = this.cardEl.querySelector('canvas');
+        
+        // Save current state
+        const isCollapsed = this.collapsed;
+        
+        // Destroy existing chart and recreate it to get fresh colors from CSS variables
+        if (this.chart) {
+            this.chart.destroy();
+            this.chart = null;
+        }
+        
+        this.createChart(canvas);
+        
+        if (isCollapsed) {
+            this.cardEl.classList.add('chart-card--collapsed');
+            this.collapsed = true;
+        }
+    }
+
     destroy() {
         if (this.chart) {
             this.chart.destroy();

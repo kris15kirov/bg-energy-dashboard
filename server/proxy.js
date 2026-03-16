@@ -12,6 +12,11 @@
 
 import http from 'node:http';
 import https from 'node:https';
+import { readFileSync, existsSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 const PORT = 3001;
 const IBEX_API = 'https://ibex.bg/Ext/SDAC_PROD/DAM_Page/api.php';
@@ -211,6 +216,25 @@ const server = http.createServer(async (req, res) => {
         } catch (err) {
             console.error(`[IBEX] Range error:`, err.message);
             res.writeHead(502, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ error: err.message }));
+        }
+        return;
+    }
+
+    // Monthly QH stats (collected data)
+    if (url.pathname === '/api/ibex-monthly-stats') {
+        const jsonPath = join(__dirname, 'ibex-qh-data.json');
+        if (!existsSync(jsonPath)) {
+            res.writeHead(404, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ error: 'No collected data. Run: node server/collect-ibex-data.js' }));
+            return;
+        }
+        try {
+            const raw = readFileSync(jsonPath, 'utf-8');
+            res.writeHead(200, { 'Content-Type': 'application/json' });
+            res.end(raw);
+        } catch (err) {
+            res.writeHead(500, { 'Content-Type': 'application/json' });
             res.end(JSON.stringify({ error: err.message }));
         }
         return;

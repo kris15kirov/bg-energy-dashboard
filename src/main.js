@@ -10,6 +10,7 @@ import './styles/charts.css';
 import './styles/table.css';
 import './styles/animations.css';
 import './styles/ibex-table.css';
+import './styles/ibex-monthly-stats.css';
 
 import { createTopNav } from './components/TopNav.js';
 import { createSidebar, updateSidebarActive } from './components/Sidebar.js';
@@ -18,6 +19,7 @@ import { TimeSeriesChart } from './components/TimeSeriesChart.js';
 import { createCommentary } from './components/Commentary.js';
 import { createDataTable } from './components/DataTable.js';
 import { createIbexDamTable, scheduleIbexAutoRefresh } from './components/IbexDamTable.js';
+import { createIbexMonthlyStatsView } from './components/IbexMonthlyStats.js';
 import { DataService } from './data/dataService.js';
 import { CHART_CONFIGS, MODELS } from './data/constants.js';
 
@@ -37,6 +39,32 @@ let sidebarEl = null;
 let mainContentEl = null;
 let filterBarEl = null;
 
+// ── Theme State ──────────────────────────────────────
+
+const getInitialTheme = () => {
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme) return savedTheme;
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+};
+
+const applyTheme = (theme) => {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('theme', theme);
+
+    // Update Pill UI
+    const pillGroup = document.getElementById('theme-toggle');
+    if (pillGroup) {
+        pillGroup.querySelectorAll('.pill').forEach(btn => {
+            btn.classList.toggle('pill--active', btn.dataset.themeVal === theme);
+        });
+    }
+    
+    // Force charts to update for new CSS vars
+    charts.forEach(c => {
+        if (typeof c.updateTheme === 'function') c.updateTheme();
+    });
+};
+
 // ── Initialize App ───────────────────────────────────
 
 async function init() {
@@ -45,6 +73,20 @@ async function init() {
 
     // Top Nav
     app.appendChild(createTopNav());
+
+    // Apply initial theme and listener
+    const savedTheme = getInitialTheme();
+    
+    // Must be done after DOM insertion for elements to bind
+    requestAnimationFrame(() => {
+        applyTheme(savedTheme);
+        const pillGroup = document.getElementById('theme-toggle');
+        if (pillGroup) {
+            pillGroup.querySelectorAll('.pill').forEach(btn => {
+                btn.addEventListener('click', () => applyTheme(btn.dataset.themeVal));
+            });
+        }
+    });
 
     // App Body
     const body = document.createElement('div');
@@ -122,6 +164,8 @@ function renderView() {
         renderOverview(tabsContainer, scrollArea);
     } else if (state.activeView === 'spot-exchange') {
         renderSpotExchange(tabsContainer, scrollArea);
+    } else if (state.activeView === 'qh-monthly-stats') {
+        renderQHMonthlyStats(tabsContainer, scrollArea);
     } else {
         renderFundamentalDetail(tabsContainer, scrollArea);
     }
@@ -256,6 +300,16 @@ function renderSpotExchange(tabsContainer, scrollArea) {
         });
         charts.push(chart);
     }
+}
+
+// ── QH Monthly Stats Page ────────────────────────────
+
+async function renderQHMonthlyStats(tabsContainer, scrollArea) {
+    tabsContainer.innerHTML = `
+    <button class="content-tab content-tab--active" data-tab="table">Monthly Table</button>
+  `;
+    const view = await createIbexMonthlyStatsView();
+    scrollArea.appendChild(view);
 }
 
 // ── Fundamental Detail Pages ─────────────────────────
