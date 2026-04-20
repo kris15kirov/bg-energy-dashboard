@@ -1,0 +1,17 @@
+BATTERY SIMULATION SUMMARY
+========================================
+
+total_profit                  : 416540.75
+total_revenue                 : 439103.6
+total_cost                    : 22562.84
+charge_count                  : 374
+discharge_count               : 379
+hold_count                    : 6231
+avg_charge_price              : 4.9
+avg_discharge_price           : 127.49
+total_energy_charged          : 3740.0
+total_energy_discharged       : 3790.0
+final_soc                     : 0
+cycles                        : 37.9
+capacity_utilization_pct      : 8.9
+spread                        : 122.59
