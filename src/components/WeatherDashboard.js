@@ -79,7 +79,7 @@ export class WeatherDashboard {
                     ${weatherData.slice(0, 168).map(w => {
                         const h = Math.max(0, Math.min(100, (w.temperature + 10) * 2)); // simple scale offset
                         const color = w.temperature < 5 ? 'var(--accent-icon)' : w.temperature > 25 ? '#ef4444' : '#10b981';
-                        return \`<div class="mini-bar" style="height: \${h}%; background-color: \${color};" title="\${w.datetime.toLocaleString()}: \${w.temperature}°C"></div>\`;
+                        return `<div class="mini-bar" style="height: ${h}%; background-color: ${color};" title="${w.datetime.toLocaleString()}: ${w.temperature}°C"></div>`;
                     }).join('')}
                 </div>
                 <div class="chart-box__subtitle">First week preview (Hourly)</div>
@@ -89,7 +89,7 @@ export class WeatherDashboard {
                 <div class="mini-bar-chart">
                     ${weatherData.slice(0, 168).map(w => {
                         const h = Math.max(0, Math.min(100, w.solar_radiation / 10)); // simple scale
-                        return \`<div class="mini-bar" style="height: \${h}%; background-color: #f59e0b;" title="\${w.datetime.toLocaleString()}: \${w.solar_radiation} W/m²"></div>\`;
+                        return `<div class="mini-bar" style="height: ${h}%; background-color: #f59e0b;" title="${w.datetime.toLocaleString()}: ${w.solar_radiation} W/m²"></div>`;
                     }).join('')}
                 </div>
                 <div class="chart-box__subtitle">First week preview (GHI)</div>
@@ -114,8 +114,7 @@ export class WeatherDashboard {
             if (s.isSunny) clc = 'heat-cell--sunny';
             else if (s.isExtremeTemp) clc = 'heat-cell--extreme';
             else if (s.isHighWind) clc = 'heat-cell--wind';
-            
-            gridHTML += \`<div class="heat-cell \${clc}" title="\${s.datetime.toLocaleString()}"></div>\`;
+            gridHTML += `<div class="heat-cell ${clc}" title="${s.datetime.toLocaleString()}"></div>`;
         });
         
         grid.innerHTML = gridHTML;
