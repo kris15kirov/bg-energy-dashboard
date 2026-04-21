@@ -294,6 +294,148 @@ class BatterySimulator:
         print("\n" + "═" * 60)
 
 
+class WeatherAwareBatterySimulator(BatterySimulator):
+    """
+    Advanced battery storage simulator considering weather factors.
+    Overrides standard decide_action but uses weather context.
+    """
+    
+    def decide_action_weather(self, price: float, soc: float, row: pd.Series) -> tuple[str, float]:
+        """
+        Returns (action, confidence).
+        """
+        if pd.isna(price):
+            return "HOLD", 0.0
+
+        cfg = self.config
+        confidence = 0.5
+        
+        solar = row.get("solar_radiation", 0)
+        temp = row.get("temperature", 15)
+        wind = row.get("wind_speed", 0)
+        
+        wind_dump = wind > 8
+        solar_surplus = solar > 400
+        temp_extreme = temp < 5 or temp > 25
+        
+        if price <= cfg.charge_price_neg:
+            confidence = 1.0
+            return ("CHARGE", confidence) if soc < cfg.capacity else ("HOLD", confidence)
+
+        action = "HOLD"
+        effective_charge_price_low = cfg.charge_price_low
+        if solar_surplus or wind_dump:
+            effective_charge_price_low += 10 
+            confidence += 0.3
+            
+        effective_discharge_price = cfg.discharge_price
+        if temp_extreme:
+            effective_discharge_price -= 10
+            confidence += 0.2
+            
+        if wind_dump:
+            effective_discharge_price += 20
+            confidence -= 0.2
+        
+        confidence = min(max(confidence, 0.0), 1.0)
+        
+        if price < effective_charge_price_low:
+            if soc < cfg.capacity:
+                action = "CHARGE"
+        elif price > effective_discharge_price:
+            if soc > 0:
+                action = "DISCHARGE"
+                
+        if action == "CHARGE" and soc >= cfg.capacity:
+            action = "HOLD"
+        if action == "DISCHARGE" and soc <= 0:
+            action = "HOLD"
+            
+        return action, confidence
+
+    def run(self, df: pd.DataFrame, price_col: str = "price") -> pd.DataFrame:
+        if price_col not in df.columns:
+            raise ValueError(f"Column '{price_col}' not found")
+
+        cfg = self.config
+        result = df.copy()
+
+        n = len(result)
+        actions = [""] * n
+        socs = [0.0] * n
+        deltas = [0.0] * n
+        revenues = [0.0] * n
+        confidences = [0.0] * n
+
+        current_soc = cfg.initial_soc
+
+        for i in range(n):
+            row = result.iloc[i]
+            price = row[price_col]
+            
+            action, confidence = self.decide_action_weather(price, current_soc, row)
+
+            if action == "CHARGE":
+                available_capacity = cfg.capacity - current_soc
+                charge_amount = min(cfg.charge_rate, available_capacity)
+                current_soc += charge_amount
+                deltas[i] = charge_amount
+                revenues[i] = -charge_amount * price
+
+            elif action == "DISCHARGE":
+                discharge_amount = min(cfg.discharge_rate, current_soc)
+                current_soc -= discharge_amount
+                deltas[i] = -discharge_amount
+                delivered = discharge_amount * cfg.efficiency
+                revenues[i] = delivered * price
+
+            else:
+                deltas[i] = 0.0
+                revenues[i] = 0.0
+
+            actions[i] = action
+            socs[i] = current_soc
+            confidences[i] = confidence
+
+        result["action"] = actions
+        result["soc"] = socs
+        result["energy_delta"] = deltas
+        result["revenue"] = revenues
+        result["confidence"] = confidences
+
+        logger.info("  Weather-Aware Battery simulation complete: %d steps", n)
+        return result
+
+
+def compare_strategies(df: pd.DataFrame) -> None:
+    print("\n" + "═" * 60)
+    print("  STRATEGY COMPARISON")
+    print("═" * 60)
+    
+    sim_basic = BatterySimulator()
+    res_basic = sim_basic.run(df)
+    sum_basic = sim_basic.summarize(res_basic)
+    
+    sim_weather = WeatherAwareBatterySimulator()
+    res_weather = sim_weather.run(df)
+    sum_weather = sim_weather.summarize(res_weather)
+    
+    print(f"\n  Metric               | Basic         | Weather-Aware ")
+    print(f"  ---------------------|---------------|---------------")
+    print(f"  Profit (EUR)         | {sum_basic['total_profit']:13,.2f} | {sum_weather['total_profit']:13,.2f}")
+    print(f"  Cycles               | {sum_basic['cycles']:13.1f} | {sum_weather['cycles']:13.1f}")
+    print(f"  Charge Hours         | {sum_basic['charge_count']:13} | {sum_weather['charge_count']:13}")
+    print(f"  Discharge Hours      | {sum_basic['discharge_count']:13} | {sum_weather['discharge_count']:13}")
+    print(f"  Avg Spread (EUR)     | {sum_basic['spread']:13.2f} | {sum_weather['spread']:13.2f}")
+    
+    diff = sum_weather['total_profit'] - sum_basic['total_profit']
+    pct_diff = 100 * diff / abs(sum_basic['total_profit']) if sum_basic['total_profit'] != 0 else 0
+    emoji = "🏆" if diff > 0 else "❌"
+    
+    print(f"\n  {emoji} Weather-Aware Profit Diff: {diff:+,.2f} EUR ({pct_diff:+.1f}%)")
+    print("═" * 60 + "\n")
+
+
 # ── CLI entry point ──────────────────────────────────
 
 if __name__ == "__main__":

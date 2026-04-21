@@ -1,0 +1,28 @@
+# Nordpool API
+
+IBEX offers API connectivity of the registered Trading Participants and all companies in contractual relations with IBEX / TP / according to the Power Exchange Operational Rules, State Gazette No. 55 of June 19th, 2020 /PEOR/. Thus  they can effectively integrate their platforms with the existing electronic trading systems, aiming at more convenience, shorter response time and accurate reports.The key benefits of the API connectivity service are:
+- Efficient and seamless integration with your internal trading systems, back office systems and operating tools;
+- Automated / Robot trading to maximise market opportunities;
+- Customised and automated reporting;
+- Consolidated, web-based IT solutions.
+Only IBEX members, with status “Active” on the IDM (Continuous trading and Intraday auctions mechanisms) and/or DAM according to the PEOR requirements are allowed to use the trading API.
+The applicable fees are available in the [IBEX EAD Tariff](https://ibex.bg/download/ibex-ead-tariff-in-force-from-1-1-2026/)on the IBEX website.
+The admission process to the API access that each Member has to pass through in order to use the service is illustrated in the diagram below:
+The described in the diagram steps are further detailed below:
+1. The process starts with the access and review of the [Request for API access](https://ibex.bg/download/request-for-api-access-in-force-from-29-7-2025/). TP signs the Request and sends it to the following IBEX e-mail: [application@ibex.bg](mailto:application@ibex.bg)
+2. The Request for API access is carefully checked by IBEX and sent to Nord Pool AS for feasibility check. If IBEX encounters missing or erroneous data in the Request, it will be sent back to the applicant with clarifying questions and guidance for corrections.
+3. TP accesses and reviews Agreement for provision of API service, which is specific for the different service types:
+- [Agreement for provision of API service for Day-Ahead market segment](https://ibex.bg/download/agreement-for-provision-of-api-service-dam-in-force-from-6-11-2024/)
+[Agreement for provision of API service for Day-Ahead market segment](https://ibex.bg/download/agreement-for-provision-of-api-service-dam-in-force-from-6-11-2024/)
+In addition to the Day-ahead market segment, the agreement allows the API service to be also used for Intraday auctions mechanism (part of the Intraday market segment)
+- [Agreement for provision of API service for Intraday market segment](https://ibex.bg/download/agreement-for-provision-of-api-service-idm-in-force-from-6-11-2024/)
+[Agreement for provision of API service for Intraday market segment](https://ibex.bg/download/agreement-for-provision-of-api-service-idm-in-force-from-6-11-2024/)
+It allows the API service to be used only for Continuous trading mechanism (part of the Intraday market segment)
+- [Agreement for provision of API service for Day-Ahead and Intraday market segments](https://ibex.bg/download/agreement-for-provision-of-api-service-dam-idm-in-force-from-6-11-2024/)
+- [Annex to the Agreement for provision of API service,](https://ibex.bg/download/annex-to-agreement-for-provision-of-api-service-for-day-ahead-market-segment/) whereby API is added for the Day-ahead market segment.
+[Agreement for provision of API service for Day-Ahead and Intraday market segments](https://ibex.bg/download/agreement-for-provision-of-api-service-dam-idm-in-force-from-6-11-2024/)
+[Annex to the Agreement for provision of API service,](https://ibex.bg/download/annex-to-agreement-for-provision-of-api-service-for-day-ahead-market-segment/)
+4. After selecting the relevant contract, TP signs and sends it to the following IBEX e-mail: [application@ibex.bg](mailto:application@ibex.bg)
+5. The contract is carefully checked by IBEX. If IBEX encounters missing or erroneous data in the Contract, it is sent back to the TP with clarifying questions and guidance for corrections. TP sends the corrected contract to IBEX for signature.
+6. TP receives the signed also from IBEX side Agreement for provision of API service. The action confirms that the Certification process has been launched.
+7. IBEX operator creates a test API account linked to the MT (member test) environment and communicates the account details to the contact person indicated in the Request for API access.

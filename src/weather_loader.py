@@ -22,7 +22,11 @@ Usage:
 ═══════════════════════════════════════════════════════
 """
 
+import json
 import logging
+import urllib.request
+import urllib.error
+import urllib.parse
 from pathlib import Path
 from typing import Dict, List, Optional, Union
 
@@ -168,6 +172,89 @@ def load_weather_data(filepath: Union[str, Path]) -> pd.DataFrame:
     return df_clean
 
 
+# ── Open-Meteo API ───────────────────────────
+
+def fetch_openmeteo_weather(
+    lat: float = 42.70,
+    lon: float = 23.32,
+    start: Optional[pd.Timestamp] = None,
+    end: Optional[pd.Timestamp] = None,
+    cache_path: Union[str, Path] = "output/weather_cache.csv",
+) -> pd.DataFrame:
+    """
+    Fetch hourly historical and forecast weather data from Open-Meteo API.
+    Provides free seamless access back to 1940 without API key.
+    Saves to cache to avoid re-fetching identical ranges.
+    """
+    cache_file = Path(cache_path)
+    if cache_file.exists():
+        logger.info("Found Open-Meteo cache at %s", cache_file)
+        try:
+            cached_df = pd.read_csv(cache_file)
+            cached_df["datetime"] = pd.to_datetime(cached_df["datetime"])
+            # If the cached data covers the requested range, return it
+            if start is not None and end is not None:
+                if cached_df["datetime"].min() <= start and cached_df["datetime"].max() >= end:
+                    logger.info("  Cache covers requested range. Using cache.")
+                    return cached_df[(cached_df["datetime"] >= start) & (cached_df["datetime"] <= end)].copy()
+            else:
+                return cached_df
+        except Exception as e:
+            logger.warning("Cache read failed: %s", e)
+
+    logger.info("Fetching Open-Meteo data for %.2f, %.2f...", lat, lon)
+    
+    base_url = "https://archive-api.open-meteo.com/v1/archive"
+    
+    if start is None or end is None:
+        start = pd.Timestamp.now() - pd.Timedelta(days=365)
+        end = pd.Timestamp.now()
+        
+    start_str = start.strftime("%Y-%m-%d")
+    end_str = end.strftime("%Y-%m-%d")
+    
+    # We load: temperature_2m, shortwave_radiation, cloudcover, windspeed_10m, precipitation
+    params = {
+        "latitude": lat,
+        "longitude": lon,
+        "start_date": start_str,
+        "end_date": end_str,
+        "hourly": "temperature_2m,shortwave_radiation,cloudcover,windspeed_10m,precipitation",
+        "timezone": "auto"
+    }
+    
+    query = urllib.parse.urlencode(params)
+    url = f"{base_url}?{query}"
+    
+    try:
+        req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
+        with urllib.request.urlopen(req, timeout=30) as response:
+            data = json.loads(response.read().decode())
+    except Exception as e:
+        logger.error("Failed to fetch from Open-Meteo: %s", e)
+        raise
+        
+    hourly = data.get("hourly", {})
+    if not hourly:
+        raise ValueError("No hourly data returned from Open-Meteo")
+        
+    df = pd.DataFrame({
+        "datetime": pd.to_datetime(hourly["time"]),
+        "temperature": hourly.get("temperature_2m", []),
+        "solar_radiation": hourly.get("shortwave_radiation", []),
+        "cloud_cover": hourly.get("cloudcover", []),
+        "wind_speed": hourly.get("windspeed_10m", []),
+        "precipitation": hourly.get("precipitation", [])
+    })
+    
+    # Cache it
+    cache_file.parent.mkdir(parents=True, exist_ok=True)
+    df.to_csv(cache_file, index=False)
+    logger.info("  Saved %d rows to Open-Meteo cache", len(df))
+    
+    return df
+
+
 # ── Demo / Synthetic Data ────────────────────────────
 
 
@@ -279,11 +366,14 @@ def merge_with_prices(
     elif weather_file is not None:
         df_weather = load_weather_data(weather_file)
     else:
-        logger.info("No weather file provided — generating demo data")
-        df_weather = generate_demo_weather(
-            start=df_prices["datetime"].min(),
-            end=df_prices["datetime"].max(),
-        )
+        start_dt = df_prices["datetime"].min()
+        end_dt = df_prices["datetime"].max()
+        try:
+            logger.info("No weather file provided — attempting to fetch real data from Open-Meteo")
+            df_weather = fetch_openmeteo_weather(start=start_dt, end=end_dt)
+        except Exception as e:
+            logger.warning("Open-Meteo fetch failed (%s). Falling back to demo data.", e)
+            df_weather = generate_demo_weather(start=start_dt, end=end_dt)
 
     # ── Ensure consistent datetime types ─────────────
     df_prices = df_prices.copy()
@@ -308,7 +398,7 @@ def merge_with_prices(
     merged.drop(columns=["_merge_dt"], inplace=True)
 
     # ── Handle missing values ────────────────────────
-    weather_col_names = [c for c in ["temperature", "solar_radiation", "cloud_cover"]
+    weather_col_names = [c for c in ["temperature", "solar_radiation", "cloud_cover", "wind_speed", "precipitation"]
                          if c in merged.columns]
 
     before_missing = merged[weather_col_names].isna().sum().sum()

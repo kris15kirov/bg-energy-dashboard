@@ -11,6 +11,8 @@ import './styles/table.css';
 import './styles/animations.css';
 import './styles/ibex-table.css';
 import './styles/ibex-monthly-stats.css';
+import './styles/weather-dashboard.css';
+import './styles/historical-explorer.css';
 
 import { createTopNav } from './components/TopNav.js';
 import { createSidebar, updateSidebarActive } from './components/Sidebar.js';
@@ -20,6 +22,8 @@ import { createCommentary } from './components/Commentary.js';
 import { createDataTable } from './components/DataTable.js';
 import { createIbexDamTable, scheduleIbexAutoRefresh } from './components/IbexDamTable.js';
 import { createIbexMonthlyStatsView } from './components/IbexMonthlyStats.js';
+import { WeatherDashboard } from './components/WeatherDashboard.js';
+import { createHistoricalExplorer } from './components/HistoricalExplorer.js';
 import { DataService } from './data/dataService.js';
 import { CHART_CONFIGS, MODELS } from './data/constants.js';
 
@@ -121,6 +125,9 @@ async function init() {
 
     // Try to load live IBEX data (falls back to mock silently)
     await dataService.initLiveData();
+    
+    // Retrieve weather data for advanced overlays and dashboards
+    await dataService.initWeatherData();
 
     // Schedule auto-refresh at 14:15 EET
     if (dataService.isLive()) {
@@ -164,6 +171,10 @@ function renderView() {
         renderOverview(tabsContainer, scrollArea);
     } else if (state.activeView === 'spot-exchange') {
         renderSpotExchange(tabsContainer, scrollArea);
+    } else if (state.activeView === 'weather-dashboard') {
+        renderWeatherDashboard(tabsContainer, scrollArea);
+    } else if (state.activeView === 'historical-explorer') {
+        renderHistoricalExplorer(tabsContainer, scrollArea);
     } else if (state.activeView === 'qh-monthly-stats') {
         renderQHMonthlyStats(tabsContainer, scrollArea);
     } else {
@@ -240,6 +251,7 @@ function renderOverview(tabsContainer, scrollArea) {
             nowDate: dataService.getNow(),
             enabledModels: state.enabledModels,
             lastUpdated: dataService.getLastUpdated(),
+            weatherData: dataService.getWeatherData(),
         });
         charts.push(chart);
     }
@@ -297,6 +309,7 @@ function renderSpotExchange(tabsContainer, scrollArea) {
             nowDate: dataService.getNow(),
             enabledModels: state.enabledModels,
             lastUpdated: dataService.getLastUpdated(),
+            weatherData: dataService.getWeatherData(),
         });
         charts.push(chart);
     }
@@ -310,6 +323,25 @@ async function renderQHMonthlyStats(tabsContainer, scrollArea) {
   `;
     const view = await createIbexMonthlyStatsView();
     scrollArea.appendChild(view);
+}
+
+// ── Weather Dashboard Page ───────────────────────────
+
+function renderWeatherDashboard(tabsContainer, scrollArea) {
+    tabsContainer.innerHTML = `
+        <button class="content-tab content-tab--active" data-tab="dashboard">Dashboard</button>
+    `;
+    const dashboard = new WeatherDashboard(scrollArea, dataService);
+}
+
+// ── Historical Explorer Page ─────────────────────────
+
+async function renderHistoricalExplorer(tabsContainer, scrollArea) {
+    tabsContainer.innerHTML = `
+        <button class="content-tab content-tab--active" data-tab="explorer">Explorer</button>
+    `;
+    const explorer = await createHistoricalExplorer();
+    scrollArea.appendChild(explorer);
 }
 
 // ── Fundamental Detail Pages ─────────────────────────
@@ -359,6 +391,7 @@ function renderFundamentalDetail(tabsContainer, scrollArea) {
                 nowDate: dataService.getNow(),
                 enabledModels: state.enabledModels,
                 lastUpdated: dataService.getLastUpdated(),
+                weatherData: dataService.getWeatherData(),
             });
             charts.push(chart);
         }
@@ -375,6 +408,7 @@ function renderFundamentalDetail(tabsContainer, scrollArea) {
                 nowDate: dataService.getNow(),
                 enabledModels: state.enabledModels,
                 lastUpdated: dataService.getLastUpdated(),
+                weatherData: dataService.getWeatherData(),
             });
             charts.push(chart);
         }

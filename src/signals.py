@@ -94,6 +94,54 @@ def add_price_signals(
     return df
 
 
+def add_weather_signals(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Add weather-enhanced signals to the DataFrame.
+    
+    Requires 'price', 'temperature', 'solar_radiation', 'wind_speed' columns.
+    
+    Signals:
+      solar_surplus     — low price + high solar radiation (>400)
+      cold_spike        — high price + low temperature (<5)
+      wind_dump         — low price + high wind speed (>8)
+      optimal_charge    — low price + high solar + mild temp (5 to 25)
+      optimal_discharge — high price + low solar (<100) + extreme temps (<5 or >25)
+    """
+    req_cols = ["price", "temperature", "solar_radiation", "wind_speed"]
+    missing = [c for c in req_cols if c not in df.columns]
+    if missing:
+        logger.warning(f"Missing columns for weather signals: {missing}")
+        return df
+
+    # Basic price bools (just in case they aren't generated)
+    is_low_price = df["price"] < 20
+    is_high_price = df["price"] > 70
+    
+    # Weather conditions
+    is_high_solar = df["solar_radiation"] > 400
+    is_low_solar = df["solar_radiation"] < 100
+    is_cold = df["temperature"] < 5
+    is_hot = df["temperature"] > 25
+    is_mild_temp = (df["temperature"] >= 5) & (df["temperature"] <= 25)
+    is_high_wind = df["wind_speed"] > 8
+    
+    df["solar_surplus"] = is_low_price & is_high_solar
+    df["cold_spike"] = is_high_price & is_cold
+    df["wind_dump"] = is_low_price & is_high_wind
+    df["optimal_charge"] = is_low_price & is_high_solar & is_mild_temp
+    df["optimal_discharge"] = is_high_price & is_low_solar & (is_cold | is_hot)
+    
+    # Logging
+    signals = ["solar_surplus", "cold_spike", "wind_dump", "optimal_charge", "optimal_discharge"]
+    total = len(df)
+    for sig in signals:
+        count = df[sig].sum()
+        pct = 100 * count / total if total > 0 else 0
+        logger.info("  Weather Signal %-18s: %5d / %d  (%.1f%%)", sig, count, total, pct)
+
+    return df
+
+
 def hourly_signal_frequency(df: pd.DataFrame) -> pd.DataFrame:
     """
     Group by hour of day and calculate frequency of each signal.
@@ -238,6 +286,28 @@ def print_signal_summary(df: pd.DataFrame) -> None:
 
     print("\n" + "═" * 60)
 
+
+def print_weather_signal_summary(df: pd.DataFrame) -> None:
+    """Print weather-aware signals summary."""
+    signals = ["solar_surplus", "cold_spike", "wind_dump", "optimal_charge", "optimal_discharge"]
+    found_signals = [s for s in signals if s in df.columns]
+    
+    if not found_signals:
+        return
+        
+    total = len(df)
+    print("\n" + "═" * 60)
+    print("  WEATHER SIGNAL ANALYSIS")
+    print("═" * 60)
+    
+    print(f"\n  🌤  Weather Events Context:")
+    for sig in found_signals:
+        count = df[sig].sum()
+        pct = 100 * count / total if total > 0 else 0
+        bar = "█" * int(pct / 2) + "░" * (50 - int(pct / 2))
+        print(f"     {sig:20s}: {count:5d} ({pct:5.1f}%)  {bar}")
+        
+    print("\n" + "═" * 60)
 
 # ── CLI entry point ──────────────────────────────────
 

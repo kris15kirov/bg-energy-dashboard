@@ -6,6 +6,7 @@
 
 import { generateAllData } from './mockDataGenerator.js';
 import { fetchDAMRange, transformDAMToSpotSeries, checkProxyHealth } from './ibexService.js';
+import { fetchWeatherRange } from './weatherService.js';
 import { format, subDays, addDays, startOfHour } from 'date-fns';
 
 let cachedData = null;
@@ -73,6 +74,27 @@ export class DataService {
         }
     }
 
+    async initWeatherData() {
+        try {
+            const now = new Date();
+            const from = subDays(now, 7);
+            const to = addDays(now, 1);
+            
+            console.log(`[DataService] Fetching Open-Meteo data from ${formatDate(from)} to ${formatDate(to)}...`);
+            const weather = await fetchWeatherRange(42.70, 23.32, from, to);
+            
+            if (weather && weather.length > 0) {
+                this._weatherData = weather;
+                console.log(`[DataService] ✓ Loaded ${weather.length} weather records`);
+                return true;
+            }
+            return false;
+        } catch (err) {
+            console.warn('[DataService] Failed to fetch Weather data:', err.message);
+            return false;
+        }
+    }
+
     _mergeIBEXSpot() {
         if (!ibexSpotData || ibexSpotData.timestamps.length === 0) return;
 
@@ -120,6 +142,17 @@ export class DataService {
     getIBEXSummaries() { return this.ibexSummaries || []; }
     getLatestDAMRaw() { return this._latestDAMRaw || null; }
     getDeliveryDate() { return this._deliveryDate || null; }
+    
+    getWeatherData() { return this._weatherData || []; }
+    getWeatherSignals() { 
+        if (!this._weatherData) return [];
+        return this._weatherData.map(w => ({
+            datetime: w.datetime,
+            isSunny: w.isSunny,
+            isExtremeTemp: w.isExtremeTemp,
+            isHighWind: w.isHighWind
+        }));
+    }
 
     getSeries(key) {
         return this.data.data[key] || null;

@@ -54,6 +54,13 @@ export const SIDEBAR_NAV = [
             { id: 'temperature', label: 'Temperature' },
             { id: 'precipitation', label: 'Precipitation' },
         ]
+    },
+    {
+        group: 'ANALYTICS',
+        items: [
+            { id: 'historical-explorer', label: 'Historical Explorer' },
+            { id: 'weather-dashboard', label: 'Weather Dashboard' }
+        ]
     }
 ];
 
