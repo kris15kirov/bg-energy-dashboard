@@ -8,9 +8,10 @@ A comprehensive, dark-themed Bulgarian energy market dashboard and analytics pip
 - 📊 **14 time-series charts** — Spot price, Residual Load, Wind, Solar, Nuclear, Hydro, and more with overlaid forecast models (EC, ECsr, GFS, ICON, ICONsr).
 - 🔴 **Live IBEX Integration** — Real-time day-ahead market spot prices from [ibex.bg](https://ibex.bg) updated automatically via Node.js proxy.
 - 🕒 **Historical Data Explorer** — Full-page interactive analyzer featuring custom date pickers, Year-over-Year (YoY) curve matching, 7d/30d rolling averages, weekly ISO profiles, and day-over-day (Δ%) tables.
+- 📉 **IBEX Analysis Suite** — Strategic insight layer including Market Regime Comparisons (2025 vs 2026), Battery Arbitrage Optimization tools (with efficiency modeling), and AI-driven decision support panels.
 - 🌤️ **Weather Dashboard** — Predictive 7-day visualizations utilizing Open-Meteo API, dynamic signal metric cards (Solar Surplus, Temp Spikes), and interactive calendar heatmaps. 
-- 📈 **Smart Overlays** — Easily correlate price charts against Temperature (°C) or Solar Output (W/m²) dual axes.
-- 🎨 **Modern Dark Theme** — Responsive, data-dense UI with `Inter` typography.
+- 📈 **Smart Overlays** — Correlation layers for price against Temperature (°C) or Solar Output (W/m²) dual axes.
+- 🎨 **Modern Dark Theme** — Responsive, high-performance UI using `Inter` typography and polished HSL color systems.
 
 ### 🐍 Backend Analytics Pipeline (Python)
 - 🔄 **Data Loading Engine** — Scrapes JSON and merges historical (2025/2026) Excel files cleanly through `src/data_loader.py`.
@@ -61,6 +62,16 @@ python3 src/main.py weather
 ```
 Generated reports and battery simulation logs are securely saved into `/output/`.
 
+### 3. Data Export (for UI)
+Before using the Historical Explorer or Analysis Suite, you must export the latest Excel/CSV data to JSON:
+```bash
+# Export historical records for the Data Explorer
+python3 src/export_historical.py
+
+# Export pre-calculated analysis for the Analysis Suite
+python3 src/export_analysis.py
+```
+
 ## Architecture Overview
 
 ```text
@@ -69,11 +80,13 @@ bg-energy-dashboard/
 │   └── proxy.js             ← IBEX API scraper / Live Proxy (port 3001)
 ├── output/                  ← Generated CSV datasets from the CLI
 ├── src/
-│   ├── components/          ← HistoricalExplorer, WeatherDashboard, Charts
-│   ├── data/                ← dataService, ibexService, weatherService
+│   ├── components/          ← HistoricalExplorer, Analysis Suite, WeatherDashboard, Charts
+│   ├── data/                ← dataService, ibexService, analysisDataService
 │   ├── styles/              ← Organized CSS design system
 │   ├── main.js              ← Frontend app entry & routing
 │   ├── main.py              ← Python CLI Analytics controller
+│   ├── export_historical.py ← Export JSON for Historical Explorer
+│   ├── export_analysis.py   ← Export JSON for Analysis Suite
 │   ├── battery_logic.py     ← Storage Simulation classes
 │   ├── data_loader.py       ← Merge data source logic
 │   ├── signals.py           ← Price/Weather algorithmic evaluation
