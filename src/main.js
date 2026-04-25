@@ -13,6 +13,7 @@ import './styles/ibex-table.css';
 import './styles/ibex-monthly-stats.css';
 import './styles/weather-dashboard.css';
 import './styles/historical-explorer.css';
+import './styles/analysis-modules.css';
 
 import { createTopNav } from './components/TopNav.js';
 import { createSidebar, updateSidebarActive } from './components/Sidebar.js';
@@ -24,7 +25,11 @@ import { createIbexDamTable, scheduleIbexAutoRefresh } from './components/IbexDa
 import { createIbexMonthlyStatsView } from './components/IbexMonthlyStats.js';
 import { WeatherDashboard } from './components/WeatherDashboard.js';
 import { createHistoricalExplorer } from './components/HistoricalExplorer.js';
+import { createMarketRegime } from './components/MarketRegime.js';
+import { createBatteryArbitrage } from './components/BatteryArbitrage.js';
+import { createInsightPanel } from './components/InsightPanel.js';
 import { DataService } from './data/dataService.js';
+import { loadAnalysisData } from './data/analysisDataService.js';
 import { CHART_CONFIGS, MODELS } from './data/constants.js';
 
 // ── Application State ────────────────────────────────
@@ -123,11 +128,13 @@ async function init() {
     body.appendChild(mainContentEl);
     app.appendChild(body);
 
-    // Try to load live IBEX data (falls back to mock silently)
+    // Initial data load
+    console.log('[Main] Initializing data services...');
     await dataService.initLiveData();
-    
-    // Retrieve weather data for advanced overlays and dashboards
     await dataService.initWeatherData();
+    const analysisData = await loadAnalysisData();
+    console.log('[Main] Analysis data loaded:', analysisData ? 'Success' : 'Failed');
+    state.analysisData = analysisData;
 
     // Schedule auto-refresh at 14:15 EET
     if (dataService.isLive()) {
@@ -159,22 +166,55 @@ function handleFilterChange(changes) {
 // ── Render Views ─────────────────────────────────────
 
 function renderView() {
-    const tabsContainer = document.getElementById('content-tabs');
-    const scrollArea = document.getElementById('content-scroll');
+    let tabsContainer = document.getElementById('content-tabs');
+    let scrollArea = document.getElementById('content-scroll');
+    let filterBar = mainContentEl.querySelector('.filter-bar');
+
+    // If structure was wiped, restore it
+    if (!tabsContainer || !scrollArea) {
+        mainContentEl.innerHTML = '';
+        
+        tabsContainer = document.createElement('div');
+        tabsContainer.className = 'content-tabs';
+        tabsContainer.id = 'content-tabs';
+        mainContentEl.appendChild(tabsContainer);
+
+        filterBar = createFilterBar(state, handleFilterChange);
+        mainContentEl.appendChild(filterBar);
+
+        scrollArea = document.createElement('div');
+        scrollArea.className = 'content-scroll';
+        scrollArea.id = 'content-scroll';
+        mainContentEl.appendChild(scrollArea);
+    }
 
     // Destroy old charts
     charts.forEach(c => c.destroy());
     charts = [];
+    
+    // Default visibility
     scrollArea.innerHTML = '';
+    tabsContainer.innerHTML = '';
+    tabsContainer.style.display = 'flex';
+    if (filterBar) filterBar.style.display = 'flex';
 
     if (state.activeView === 'overview') {
         renderOverview(tabsContainer, scrollArea);
     } else if (state.activeView === 'spot-exchange') {
         renderSpotExchange(tabsContainer, scrollArea);
     } else if (state.activeView === 'weather-dashboard') {
-        renderWeatherDashboard(tabsContainer, scrollArea);
+        // Hide tabs and filter bar for dashboard
+        tabsContainer.style.display = 'none';
+        if (filterBar) filterBar.style.display = 'none';
+        renderWeatherDashboard(scrollArea);
     } else if (state.activeView === 'historical-explorer') {
-        renderHistoricalExplorer(tabsContainer, scrollArea);
+        tabsContainer.style.display = 'none';
+        if (filterBar) filterBar.style.display = 'none';
+        renderHistoricalExplorer(scrollArea);
+    } else if (state.activeView === 'analysis-suite') {
+        tabsContainer.style.display = 'none';
+        if (filterBar) filterBar.style.display = 'none';
+        renderAnalysisSuite(scrollArea);
     } else if (state.activeView === 'qh-monthly-stats') {
         renderQHMonthlyStats(tabsContainer, scrollArea);
     } else {
@@ -327,21 +367,70 @@ async function renderQHMonthlyStats(tabsContainer, scrollArea) {
 
 // ── Weather Dashboard Page ───────────────────────────
 
-function renderWeatherDashboard(tabsContainer, scrollArea) {
-    tabsContainer.innerHTML = `
-        <button class="content-tab content-tab--active" data-tab="dashboard">Dashboard</button>
-    `;
-    const dashboard = new WeatherDashboard(scrollArea, dataService);
+function renderWeatherDashboard(container) {
+    const dashboard = new WeatherDashboard(container, dataService);
 }
 
 // ── Historical Explorer Page ─────────────────────────
 
-async function renderHistoricalExplorer(tabsContainer, scrollArea) {
-    tabsContainer.innerHTML = `
-        <button class="content-tab content-tab--active" data-tab="explorer">Explorer</button>
-    `;
+async function renderHistoricalExplorer(container) {
     const explorer = await createHistoricalExplorer();
-    scrollArea.appendChild(explorer);
+    container.appendChild(explorer);
+}
+
+// ── Analysis Suite Page ──────────────────────────────
+
+function renderAnalysisSuite(container) {
+    console.log('[Main] Rendering Analysis Suite...');
+    if (!state.analysisData) {
+        container.innerHTML = '<div style="padding: 2rem; color: var(--text-muted);">Loading analysis data or data unavailable...</div>';
+        return;
+    }
+
+    const suite = document.createElement('div');
+    suite.className = 'analysis-suite-container';
+    suite.style.padding = '2rem';
+    suite.style.maxWidth = '1200px';
+    suite.style.margin = '0 auto';
+    
+    const header = document.createElement('div');
+    header.style.marginBottom = '2rem';
+    header.innerHTML = `
+        <h2 style="font-size: 2rem; color: var(--text-primary); margin-bottom: 0.5rem;">📈 IBEX Analysis Suite</h2>
+        <p style="color: var(--text-muted);">Deep insights into market regimes, battery optimization, and price dynamics.</p>
+    `;
+    suite.appendChild(header);
+    
+    const components = [
+        { name: 'InsightPanel', fn: createInsightPanel },
+        { name: 'MarketRegime', fn: createMarketRegime },
+        { name: 'BatteryArbitrage', fn: createBatteryArbitrage }
+    ];
+
+    components.forEach(comp => {
+        try {
+            console.log(`[Main] Creating ${comp.name}...`);
+            const el = comp.fn(state.analysisData);
+            if (el instanceof Node) {
+                suite.appendChild(el);
+                console.log(`[Main] ✓ ${comp.name} appended`);
+            } else {
+                console.warn(`[Main] ${comp.name} did not return a valid Node:`, el);
+            }
+        } catch (err) {
+            console.error(`[Main] Error rendering ${comp.name}:`, err);
+            const errorEl = document.createElement('div');
+            errorEl.style.color = 'var(--color-negative)';
+            errorEl.style.padding = '1rem';
+            errorEl.style.margin = '1rem 0';
+            errorEl.style.border = '1px solid var(--color-negative)';
+            errorEl.style.borderRadius = '8px';
+            errorEl.textContent = `Error in ${comp.name}: ${err.message}`;
+            suite.appendChild(errorEl);
+        }
+    });
+    
+    container.appendChild(suite);
 }
 
 // ── Fundamental Detail Pages ─────────────────────────

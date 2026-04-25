@@ -30,6 +30,7 @@ export const SIDEBAR_NAV = [
     {
         group: 'ANALYTICS',
         items: [
+            { id: 'analysis-suite', label: 'Analysis Suite', active: true },
             { id: 'historical-explorer', label: 'Historical Explorer', active: true },
             { id: 'weather-dashboard', label: 'Weather Dashboard', active: false }
         ]

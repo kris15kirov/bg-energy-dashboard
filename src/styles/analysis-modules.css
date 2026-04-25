@@ -1,0 +1,204 @@
+/* ═══════════════════════════════════════════════════════
+   BG Energy Dashboard — Analysis Modules Styling
+   ═══════════════════════════════════════════════════════ */
+
+.analysis-module {
+    margin-bottom: 2rem;
+}
+
+.analysis-card {
+    background: var(--bg-card);
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    border: 1px solid var(--border-color);
+}
+
+.analysis-card__title {
+    margin: 0 0 1.5rem 0;
+    font-size: 1.25rem;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+/* KPI Grid */
+.kpi-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.kpi-row {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    align-items: center;
+    padding: 0.75rem;
+    background: var(--bg-secondary);
+    border-radius: 8px;
+    font-size: 0.9rem;
+}
+
+.kpi-label {
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.kpi-val {
+    color: var(--text-muted);
+}
+
+.kpi-val span {
+    color: var(--text-primary);
+    font-weight: 600;
+}
+
+.kpi-change {
+    font-weight: 600;
+    text-align: right;
+}
+
+.trend--up { color: var(--color-negative); }
+.trend--down { color: var(--color-positive); }
+
+/* Battery Arbitrage */
+.battery-settings {
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+    background: var(--bg-secondary);
+    border-radius: 8px;
+}
+
+.setting-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.setting-item label {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    min-width: 150px;
+}
+
+.setting-item input[type="range"] {
+    flex-grow: 1;
+}
+
+#eff-val {
+    font-weight: 600;
+    color: var(--accent-actual);
+    min-width: 40px;
+}
+
+.battery-stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.b-stat {
+    background: var(--bg-secondary);
+    padding: 1rem;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.b-stat__label {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-bottom: 0.5rem;
+}
+
+.b-stat__val {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.revenue-estimate {
+    background: linear-gradient(135deg, var(--accent-actual) 0%, #3b82f6 100%);
+    color: white;
+    padding: 1.5rem;
+    border-radius: 8px;
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+.revenue-estimate h4 {
+    margin: 0 0 0.5rem 0;
+    font-size: 0.9rem;
+    opacity: 0.9;
+}
+
+.rev-val {
+    font-size: 1.75rem;
+    font-weight: 700;
+}
+
+/* Insight Panel */
+.insight-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.insight-item {
+    display: flex;
+    gap: 1rem;
+    padding: 1rem;
+    background: var(--bg-secondary);
+    border-radius: 8px;
+    border-left: 4px solid var(--accent-actual);
+}
+
+.insight-icon {
+    font-size: 1.25rem;
+}
+
+.insight-text {
+    font-size: 0.95rem;
+    color: var(--text-primary);
+    line-height: 1.5;
+}
+
+/* Decision Layer */
+.decision-layer {
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.decision-title {
+    margin: 0 0 1rem 0;
+    font-size: 1rem;
+    color: var(--text-primary);
+}
+
+.decision-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+.decision-badge {
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: white;
+}
+
+.decision--charge { background: #3b82f6; }
+.decision--discharge { background: #f59e0b; }
+.decision--volatility { background: #ef4444; }
+.decision--battery { background: #10b981; }
+
+.analysis-footer {
+    margin-top: 1rem;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    font-style: italic;
+}
