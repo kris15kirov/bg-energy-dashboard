@@ -112,60 +112,58 @@ def load_ibex_excel(filepath: Union[str, Path], year: int) -> pd.DataFrame:
 
     logger.info("Loading %s …", filepath.name)
 
-    # Read Sheet1 — the consolidated sheet
-    df_raw = pd.read_excel(
+    # Read all sheets
+    sheets = pd.read_excel(
         filepath,
-        sheet_name="Sheet1",   # cross-tab with all months
+        sheet_name=None,       # read all sheets
         header=0,              # first row is headers
         dtype=str,             # read everything as string first
     )
 
-    logger.info("  Raw shape: %s", df_raw.shape)
+    all_records = []
 
-    # ── Identify date columns ────────────────────────
-    date_columns = {}  # original col name → pd.Timestamp
-    for col in df_raw.columns:
-        dt = _parse_date_header(col, year)
-        if dt is not None:
-            date_columns[col] = dt
+    for sheet_name, df_raw in sheets.items():
+        logger.info("  Processing sheet: %s (shape: %s)", sheet_name, df_raw.shape)
 
-    if not date_columns:
-        logger.error("  No date columns found in %s!", filepath.name)
+        # ── Identify date columns ────────────────────────
+        date_columns = {}  # original col name → pd.Timestamp
+        for col in df_raw.columns:
+            dt = _parse_date_header(col, year)
+            if dt is not None:
+                date_columns[col] = dt
+
+        if not date_columns:
+            logger.warning("    No date columns found in sheet %s!", sheet_name)
+            continue
+
+        # ── Identify the product column ──────────────────
+        product_col = df_raw.columns[0]
+
+        # ── Filter to hourly rows only (PH 1 … PH 24) ───
+        df_raw["_hour"] = df_raw[product_col].apply(_extract_hour)
+        df_hours = df_raw.dropna(subset=["_hour"]).copy()
+        df_hours["_hour"] = df_hours["_hour"].astype(int)
+
+        if df_hours.empty:
+            logger.warning("    No hourly rows found in sheet %s!", sheet_name)
+            continue
+
+        # ── Melt: wide → long ────────────────────────────
+        for _, row in df_hours.iterrows():
+            hour = row["_hour"]
+            for col_name, dt in date_columns.items():
+                raw_price = row.get(col_name)
+                all_records.append({
+                    "date": dt.normalize(),  # date only, no time
+                    "hour": hour,
+                    "price": raw_price,
+                })
+
+    if not all_records:
+        logger.error("  No valid data found in any sheet for %s!", filepath.name)
         return pd.DataFrame(columns=["date", "hour", "price"])
 
-    logger.info("  Found %d date columns (%s → %s)",
-                len(date_columns),
-                min(date_columns.values()).strftime("%Y-%m-%d"),
-                max(date_columns.values()).strftime("%Y-%m-%d"))
-
-    # ── Identify the product column ──────────────────
-    # First column should be "Product"
-    product_col = df_raw.columns[0]
-
-    # ── Filter to hourly rows only (PH 1 … PH 24) ───
-    df_raw["_hour"] = df_raw[product_col].apply(_extract_hour)
-    df_hours = df_raw.dropna(subset=["_hour"]).copy()
-    df_hours["_hour"] = df_hours["_hour"].astype(int)
-
-    if df_hours.empty:
-        logger.error("  No hourly rows (PH 1–PH 24) found in %s!", filepath.name)
-        return pd.DataFrame(columns=["date", "hour", "price"])
-
-    logger.info("  Kept %d hourly rows (expected 24)", len(df_hours))
-
-    # ── Melt: wide → long ────────────────────────────
-    records = []
-    for _, row in df_hours.iterrows():
-        hour = row["_hour"]
-        for col_name, dt in date_columns.items():
-            raw_price = row.get(col_name)
-            records.append({
-                "date": dt.normalize(),  # date only, no time
-                "hour": hour,
-                "price": raw_price,
-            })
-
-    df = pd.DataFrame(records)
+    df = pd.DataFrame(all_records)
 
     # ── Clean prices ─────────────────────────────────
     df["price"] = pd.to_numeric(df["price"], errors="coerce")

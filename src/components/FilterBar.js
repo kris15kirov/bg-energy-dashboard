@@ -11,16 +11,16 @@ export function createFilterBar(state, onStateChange) {
   bar.innerHTML = `
     <!-- Area -->
     <div class="filter-bar__section area-selector">
-      <span class="area-selector__main">🇧🇬 Bulgaria <span style="font-size:10px;color:var(--text-muted)">▾</span></span>
+      <span class="area-selector__main" style="font-weight: bold;">🇧🇬 Bulgaria <span style="font-size:10px;color:var(--text-muted)">▾</span></span>
       <div class="area-selector__neighbors">
-        ${NEIGHBORS.map(n => `<span class="area-tag">${n}</span>`).join('')}
+        ${NEIGHBORS.map(n => `<span class="area-tag" style="opacity: 0.5; cursor: not-allowed; font-style: italic;" title="Coming soon">${n}</span>`).join('')}
       </div>
     </div>
 
     <div class="filter-bar__separator"></div>
 
     <!-- Resolution -->
-    <div class="filter-bar__section">
+    <div class="filter-bar__section" style="display: none;">
       <div class="pill-group" id="resolution-pills">
         ${RESOLUTIONS.map(r => `
           <button class="pill${r === state.resolution ? ' pill--active' : ''}" data-res="${r}">${r}</button>
@@ -31,7 +31,7 @@ export function createFilterBar(state, onStateChange) {
     <div class="filter-bar__separator"></div>
 
     <!-- Time Slider -->
-    <div class="filter-bar__section time-slider">
+    <div class="filter-bar__section time-slider" style="display: none;">
       <span class="time-slider__label">1 week</span>
       <div class="time-slider__track">
         <div class="time-slider__fill"></div>
@@ -45,7 +45,7 @@ export function createFilterBar(state, onStateChange) {
     <div class="filter-bar__separator"></div>
 
     <!-- Model Toggles -->
-    <div class="filter-bar__section model-toggles" id="model-toggles">
+    <div class="filter-bar__section model-toggles" id="model-toggles" style="display: none;">
       ${MODELS.map(m => `
         <button class="model-pill${state.enabledModels.has(m.id) ? ' model-pill--active' : ''}"
                 data-model="${m.id}">${m.label}</button>
@@ -62,7 +62,7 @@ export function createFilterBar(state, onStateChange) {
     </div>
 
     <!-- Archive -->
-    <div class="filter-bar__section">
+    <div class="filter-bar__section" style="display: none;">
       <button class="archive-btn">📅 Archive</button>
     </div>
   `;

@@ -52,7 +52,18 @@ export async function createHistoricalExplorer() {
     try {
         const data = await loadHistoricalData();
         allRecords = data.records;
-        filterState.year = null; // All years
+        
+        const maxDate = allRecords.length > 0 ? allRecords.map(r => r.datetime).reduce((a, b) => a > b ? a : b) : new Date();
+        const endOfMaxDay = new Date(maxDate.getFullYear(), maxDate.getMonth(), maxDate.getDate(), 23, 59, 59);
+        const startOf7DaysAgo = new Date(maxDate.getFullYear(), maxDate.getMonth(), maxDate.getDate(), 0, 0, 0);
+        startOf7DaysAgo.setDate(startOf7DaysAgo.getDate() - 7);
+        
+        filterState.year = null;
+        filterState.quarter = 'All';
+        filterState.month = 0;
+        filterState.dateFrom = startOf7DaysAgo;
+        filterState.dateTo = endOfMaxDay;
+        
         filteredData = allRecords;
         container.innerHTML = '';
         renderExplorer(container, data.meta);
@@ -181,11 +192,13 @@ function createFilterBar() {
         <div class="hist-filter">
             <label class="hist-filter__label">From</label>
             <input type="date" class="hist-filter__date" id="hist-filter-from"
+                   value="${filterState.dateFrom ? fmtDate(filterState.dateFrom) : ''}"
                    min="${fmtDate(minDate)}" max="${fmtDate(maxDate)}" />
         </div>
         <div class="hist-filter">
             <label class="hist-filter__label">To</label>
             <input type="date" class="hist-filter__date" id="hist-filter-to"
+                   value="${filterState.dateTo ? fmtDate(filterState.dateTo) : ''}"
                    min="${fmtDate(minDate)}" max="${fmtDate(maxDate)}" />
         </div>
         <button class="hist-filter__reset-btn" id="hist-filter-reset" title="Reset all filters">✕ Reset</button>
@@ -231,12 +244,17 @@ function createFilterBar() {
     });
 
     bar.querySelector('#hist-filter-reset').addEventListener('click', () => {
-        filterState = { year: null, quarter: 'All', month: 0, dateFrom: null, dateTo: null };
+        const maxDate = allDates.length > 0 ? allDates.reduce((a, b) => a > b ? a : b) : new Date();
+        const endOfMaxDay = new Date(maxDate.getFullYear(), maxDate.getMonth(), maxDate.getDate(), 23, 59, 59);
+        const startOf7DaysAgo = new Date(maxDate.getFullYear(), maxDate.getMonth(), maxDate.getDate(), 0, 0, 0);
+        startOf7DaysAgo.setDate(startOf7DaysAgo.getDate() - 7);
+
+        filterState = { year: null, quarter: 'All', month: 0, dateFrom: startOf7DaysAgo, dateTo: endOfMaxDay };
         bar.querySelector('#hist-filter-year').value = '';
         bar.querySelector('#hist-filter-quarter').value = 'All';
         bar.querySelector('#hist-filter-month').value = '0';
-        bar.querySelector('#hist-filter-from').value = '';
-        bar.querySelector('#hist-filter-to').value = '';
+        bar.querySelector('#hist-filter-from').value = fmtDate(startOf7DaysAgo);
+        bar.querySelector('#hist-filter-to').value = fmtDate(endOfMaxDay);
         updateView();
     });
 

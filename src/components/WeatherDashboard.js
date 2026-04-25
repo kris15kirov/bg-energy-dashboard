@@ -8,33 +8,13 @@ export class WeatherDashboard {
     }
 
     render() {
-        this.container.innerHTML = '';
-        
-        const weatherData = this.dataService.getWeatherData();
-        const signals = this.dataService.getWeatherSignals();
-        
-        if (!weatherData || weatherData.length === 0) {
-            this.container.innerHTML = `
-                <div style="display:flex;align-items:center;justify-content:center;height:400px;color:var(--text-muted);font-size:var(--fs-lg);">
-                    No weather data available. Connections to Open-Meteo might be failing.
-                </div>
-            `;
-            return;
-        }
-
-        const layout = document.createElement('div');
-        layout.className = 'weather-dashboard';
-
-        // Summary Cards
-        layout.appendChild(this.createSummaryCards(signals));
-
-        // Temperature & Solar Charts
-        layout.appendChild(this.createMainCharts(weatherData));
-
-        // Signal Heatmap
-        layout.appendChild(this.createSignalHeatmap(signals));
-
-        this.container.appendChild(layout);
+        this.container.innerHTML = `
+            <div style="display:flex; flex-direction: column; align-items:center; justify-content:center; height:400px; color:var(--text-muted); font-size:var(--fs-lg);">
+                <div style="font-size: 3rem; margin-bottom: 1rem;">🌤️</div>
+                <h3>Weather Dashboard</h3>
+                <p>Advanced meteorological features are coming soon.</p>
+            </div>
+        `;
     }
 
     createSummaryCards(signals) {

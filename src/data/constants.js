@@ -20,46 +20,38 @@ export const SIDEBAR_NAV = [
     {
         group: 'MARKET',
         items: [
-            { id: 'overview', label: 'Overview' },
-            { id: 'spot-exchange', label: 'Spot & Exchange' },
-            { id: 'balancing', label: 'Balancing' },
-            { id: 'capture-prices', label: 'Capture Prices' },
-            { id: 'qh-monthly-stats', label: 'QH Monthly Stats' },
-        ]
-    },
-    {
-        group: 'OUTLOOKS',
-        items: [
-            { id: 'outlook-72h', label: '72 Hours' },
-            { id: 'outlook-15d', label: '15 Days' },
-            { id: 'outlook-45d', label: '45 Days' },
-        ]
-    },
-    {
-        group: 'FUNDAMENTALS',
-        items: [
-            { id: 'residual-load', label: 'Residual Load' },
-            { id: 'consumption', label: 'Consumption' },
-            { id: 'wind-power', label: 'Wind Power' },
-            { id: 'solar-power', label: 'Solar Power' },
-            { id: 'nuclear', label: 'Nuclear' },
-            { id: 'hydro', label: 'Hydro' },
-            { id: 'thermal', label: 'Thermal' },
-            { id: 'exchange', label: 'Cross-border Exchange' },
-        ]
-    },
-    {
-        group: 'WEATHER',
-        items: [
-            { id: 'temperature', label: 'Temperature' },
-            { id: 'precipitation', label: 'Precipitation' },
+            { id: 'overview', label: 'Overview', active: true },
+            { id: 'spot-exchange', label: 'Spot & Exchange', active: true },
+            { id: 'balancing', label: 'Balancing', active: false },
+            { id: 'capture-prices', label: 'Capture Prices', active: false },
+            { id: 'qh-monthly-stats', label: 'QH Monthly Stats', active: true },
         ]
     },
     {
         group: 'ANALYTICS',
         items: [
-            { id: 'historical-explorer', label: 'Historical Explorer' },
-            { id: 'weather-dashboard', label: 'Weather Dashboard' }
+            { id: 'historical-explorer', label: 'Historical Explorer', active: true },
+            { id: 'weather-dashboard', label: 'Weather Dashboard', active: false }
+        ]
+    },
+    {
+        group: 'FUNDAMENTALS',
+        items: [
+            { id: 'residual-load', label: 'Residual Load', active: true, mocked: true },
+            { id: 'consumption', label: 'Consumption', active: true, mocked: true },
+            { id: 'wind-power', label: 'Wind Power', active: true, mocked: true },
+            { id: 'solar-power', label: 'Solar Power', active: true, mocked: true },
+            { id: 'nuclear', label: 'Nuclear', active: true, mocked: true },
+            { id: 'hydro', label: 'Hydro', active: true, mocked: true },
+            { id: 'thermal', label: 'Thermal', active: true, mocked: true },
+            { id: 'exchange', label: 'Cross-border Exchange', active: true, mocked: true },
+        ]
+    },
+    {
+        group: 'WEATHER',
+        items: [
+            { id: 'temperature', label: 'Temperature', active: true, mocked: true },
+            { id: 'precipitation', label: 'Precipitation', active: true, mocked: true },
         ]
     }
 ];

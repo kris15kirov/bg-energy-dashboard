@@ -14,17 +14,48 @@ export function createSidebar(activeId, onNavigate) {
 
         const label = document.createElement('div');
         label.className = 'sidebar__group-label';
-        label.textContent = group.group;
+        if (group.group === 'ANALYTICS') {
+            label.innerHTML = `${group.group} <b style="color:var(--text-heading);">(NEW)</b>`;
+        } else {
+            label.textContent = group.group;
+        }
         groupEl.appendChild(label);
 
         for (const item of group.items) {
             const itemEl = document.createElement('div');
             itemEl.className = `sidebar__item${item.id === activeId ? ' sidebar__item--active' : ''}`;
-            itemEl.textContent = item.label;
             itemEl.dataset.id = item.id;
-            itemEl.addEventListener('click', () => {
-                onNavigate(item.id);
-            });
+            
+            if (item.active !== false) {
+                // Working section
+                itemEl.style.fontWeight = 'bold';
+                
+                if (item.mocked) {
+                    itemEl.style.flexDirection = 'column';
+                    itemEl.style.alignItems = 'flex-start';
+                    itemEl.innerHTML = `
+                        <div>${item.label}</div>
+                        <div style="font-size: 0.75rem; font-style: italic; font-weight: normal; color: var(--text-muted); margin-top: 2px;">mocked data</div>
+                    `;
+                } else {
+                    itemEl.textContent = item.label;
+                }
+                
+                itemEl.addEventListener('click', () => {
+                    onNavigate(item.id);
+                });
+            } else {
+                // Non-working section
+                itemEl.style.opacity = '0.5';
+                itemEl.style.cursor = 'not-allowed';
+                itemEl.style.flexDirection = 'column';
+                itemEl.style.alignItems = 'flex-start';
+                itemEl.innerHTML = `
+                    <div style="font-weight: normal;">${item.label}</div>
+                    <div style="font-size: 0.75rem; font-style: italic; margin-top: 2px;">coming soon</div>
+                `;
+            }
+
             groupEl.appendChild(itemEl);
         }
 

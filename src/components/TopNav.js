@@ -15,7 +15,7 @@ export function createTopNav() {
     </div>
     <div class="top-nav__modules">
       ${TOP_NAV_MODULES.map(m => `
-        <button class="top-nav__module ${m.active ? 'top-nav__module--active' : ''}" data-module="${m.id}">
+        <button class="top-nav__module ${m.active ? 'top-nav__module--active' : ''}" data-module="${m.id}" ${!m.active ? 'style="opacity: 0.5; cursor: not-allowed; font-style: italic;" title="Coming soon"' : 'style="font-weight: bold;"'}>
           ${m.label}
         </button>
       `).join('')}
