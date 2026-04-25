@@ -13,7 +13,6 @@ export function createMarketRegime(data) {
 
     const kpis = data.Comparison_2025_vs_2026;
     
-    // Mapping internal names to human readable labels
     const labelMap = {
         'avg_price': 'Average Price',
         'median_price': 'Median Price',
@@ -25,40 +24,59 @@ export function createMarketRegime(data) {
         'avg_daily_spread': 'Average Daily Spread'
     };
 
-    let kpiHtml = '';
-    kpis.forEach(kpi => {
-        const label = labelMap[kpi.metric] || kpi.metric;
-        const v2025 = kpi['Sep-Dec 2025'];
-        const v2026 = kpi['Jan-Apr 2026'];
-        const pctChange = (typeof kpi.pct_change === 'number') ? kpi.pct_change * 100 : 0;
-        const changeClass = pctChange > 0 ? 'trend--up' : 'trend--down';
-        const changeIcon = pctChange > 0 ? '▲' : '▼';
-        
-        // Formatting
-        const formatVal = (val, metric) => {
-            if (typeof val !== 'number') return 'N/A';
-            if (metric.includes('pct')) return (val * 100).toFixed(2) + '%';
-            return val.toFixed(2);
-        };
+    const formatVal = (val, metric) => {
+        if (typeof val !== 'number') return 'N/A';
+        if (metric.includes('pct')) return (val * 100).toFixed(2) + '%';
+        return val.toFixed(2);
+    };
 
-        kpiHtml += `
-            <div class="kpi-row">
-                <div class="kpi-label" style="color: var(--text-primary); font-weight: 500;">${label}</div>
-                <div class="kpi-val" style="color: var(--text-muted);">2025: <span style="color: var(--text-primary); font-weight: 600;">${formatVal(v2025, kpi.metric)}</span></div>
-                <div class="kpi-val" style="color: var(--text-muted);">2026: <span style="color: var(--text-primary); font-weight: 600;">${formatVal(v2026, kpi.metric)}</span></div>
-                <div class="kpi-change ${changeClass}" style="font-weight: 600; text-align: right;">${changeIcon} ${Math.abs(pctChange).toFixed(1)}%</div>
-            </div>
+    let tableRows = '';
+    kpis.forEach(kpi => {
+        const metricKey = kpi.metric || kpi.Metric || '';
+        const label = labelMap[metricKey] || metricKey || 'Unknown KPI';
+        const v2025 = kpi['Sep-Dec 2025'] || 0;
+        const v2026 = kpi['Jan-Apr 2026'] || 0;
+        const pctChange = (typeof kpi.pct_change === 'number') ? kpi.pct_change * 100 : 
+                          (typeof kpi.pct_change_abs === 'number' ? kpi.pct_change_abs * 100 : 0);
+        
+        // Literal interpretation: Positive = Green, Negative = Red
+        const colorClass = pctChange >= 0 ? 'text-positive' : 'text-negative';
+        const changeIcon = pctChange >= 0 ? '▲' : '▼';
+
+        tableRows += `
+            <tr class="analysis-table__row">
+                <td class="analysis-table__cell analysis-table__cell--label">${label}</td>
+                <td class="analysis-table__cell">${formatVal(v2025, kpi.metric)}</td>
+                <td class="analysis-table__cell">${formatVal(v2026, kpi.metric)}</td>
+                <td class="analysis-table__cell analysis-table__cell--change ${colorClass}">
+                    <span class="change-badge">
+                        ${changeIcon} ${Math.abs(pctChange).toFixed(1)}%
+                    </span>
+                </td>
+            </tr>
         `;
     });
 
     container.innerHTML = `
         <div class="analysis-card">
             <h3 class="analysis-card__title">⚖️ Market Regime Comparison (2025 vs 2026)</h3>
-            <div class="kpi-grid">
-                ${kpiHtml}
+            <div class="analysis-table-wrapper">
+                <table class="analysis-table">
+                    <thead>
+                        <tr>
+                            <th class="analysis-table__header" style="min-width: 140px;">Metric</th>
+                            <th class="analysis-table__header">2025</th>
+                            <th class="analysis-table__header">2026</th>
+                            <th class="analysis-table__header" style="text-align: right;">Change</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${tableRows}
+                    </tbody>
+                </table>
             </div>
             <div class="analysis-footer">
-                * Comparison based on Sep-Dec 2025 vs Jan-Apr 2026 available data.
+                * Comparison based on Sep-Dec 2025 vs Jan-Apr 2026.
             </div>
         </div>
     `;

@@ -59,8 +59,11 @@
     text-align: right;
 }
 
-.trend--up { color: var(--color-negative); }
-.trend--down { color: var(--color-positive); }
+.text-positive { color: var(--color-positive); }
+.text-negative { color: var(--color-negative); }
+
+.trend--up { color: var(--color-positive); }
+.trend--down { color: var(--color-negative); }
 
 /* Battery Arbitrage */
 .battery-settings {
@@ -195,6 +198,73 @@
 .decision--discharge { background: #f59e0b; }
 .decision--volatility { background: #ef4444; }
 .decision--battery { background: #10b981; }
+
+.analysis-table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    background: var(--bg-secondary);
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+}
+
+.analysis-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+}
+
+.analysis-table__header {
+    background: var(--bg-primary);
+    padding: 1rem;
+    text-align: left;
+    color: var(--text-muted);
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    border-bottom: 2px solid var(--border-color);
+}
+
+.analysis-table__row {
+    border-bottom: 1px solid var(--divider);
+    transition: background 0.2s ease;
+}
+
+.analysis-table__row:hover {
+    background: var(--bg-hover);
+}
+
+.analysis-table__row:last-child {
+    border-bottom: none;
+}
+
+.analysis-table__cell {
+    padding: 1rem;
+    color: var(--text-primary);
+}
+
+.analysis-table__cell--label {
+    font-weight: 500;
+}
+
+.analysis-table__cell--change {
+    text-align: right;
+}
+
+.change-badge {
+    padding: 0.25rem 0.6rem;
+    border-radius: 4px;
+    font-weight: 700;
+    display: inline-block;
+    background: rgba(0, 0, 0, 0.05);
+}
+
+.text-positive .change-badge {
+    background: rgba(46, 213, 115, 0.15);
+}
+
+.text-negative .change-badge {
+    background: rgba(238, 90, 111, 0.15);
+}
 
 .analysis-footer {
     margin-top: 1rem;

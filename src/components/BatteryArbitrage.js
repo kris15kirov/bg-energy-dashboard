@@ -29,7 +29,7 @@ export function createBatteryArbitrage(data) {
             bestCharge = sorted[0].hour;
             bestDischarge = [...profile].sort((a, b) => b.avg_price - a.avg_price)[0].hour;
         } else {
-            bestCharge = 4; // Default guess
+            bestCharge = 4;
             bestDischarge = 19;
         }
     }
@@ -50,32 +50,38 @@ export function createBatteryArbitrage(data) {
                 </div>
             </div>
 
-            <div class="battery-stats">
-                <div class="b-stat">
-                    <div class="b-stat__label">Best Charge Hour</div>
-                    <div class="b-stat__val">${String(bestCharge).padStart(2, '0')}:00</div>
-                </div>
-                <div class="b-stat">
-                    <div class="b-stat__label">Best Discharge Hour</div>
-                    <div class="b-stat__val">${String(bestDischarge).padStart(2, '0')}:00</div>
-                </div>
-                <div class="b-stat">
-                    <div class="b-stat__label">Avg Daily Spread</div>
-                    <div class="b-stat__val">${dailySpread.toFixed(2)} EUR</div>
-                </div>
-                <div class="b-stat">
-                    <div class="b-stat__label">Profitable Days</div>
-                    <div class="b-stat__val">${profitableDays.toFixed(1)}%</div>
-                </div>
+            <div class="analysis-table-wrapper" style="margin-bottom: 1.5rem;">
+                <table class="analysis-table">
+                    <thead>
+                        <tr>
+                            <th class="analysis-table__header">Metric</th>
+                            <th class="analysis-table__header" style="text-align: right;">Value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="analysis-table__row">
+                            <td class="analysis-table__cell analysis-table__cell--label">Best Charge Hour</td>
+                            <td class="analysis-table__cell" style="text-align: right; font-weight: 600;">${String(bestCharge).padStart(2, '0')}:00</td>
+                        </tr>
+                        <tr class="analysis-table__row">
+                            <td class="analysis-table__cell analysis-table__cell--label">Best Discharge Hour</td>
+                            <td class="analysis-table__cell" style="text-align: right; font-weight: 600;">${String(bestDischarge).padStart(2, '0')}:00</td>
+                        </tr>
+                        <tr class="analysis-table__row">
+                            <td class="analysis-table__cell analysis-table__cell--label">Avg Daily Spread</td>
+                            <td class="analysis-table__cell" style="text-align: right; font-weight: 600;">${dailySpread.toFixed(2)} EUR</td>
+                        </tr>
+                        <tr class="analysis-table__row">
+                            <td class="analysis-table__cell analysis-table__cell--label">Profitable Days</td>
+                            <td class="analysis-table__cell" style="text-align: right; font-weight: 600;">${profitableDays.toFixed(1)}%</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
 
             <div class="revenue-estimate">
                 <h4>Daily Revenue Estimate (1MW / 1MWh)</h4>
                 <div class="rev-val" id="rev-display">${baseProfit.toFixed(2)} EUR</div>
-            </div>
-
-            <div class="analysis-footer">
-                Calculated based on daily max-min spreads with theoretical perfect foresight.
             </div>
         </div>
     `;
@@ -89,11 +95,8 @@ export function createBatteryArbitrage(data) {
         slider?.addEventListener('input', (e) => {
             const eff = parseInt(e.target.value);
             display.textContent = `${eff}%`;
-            
-            // Simple linear interpolation
             const multiplier = eff / 90;
             const newProfit = baseProfit * multiplier;
-            
             revDisplay.textContent = `${newProfit.toFixed(2)} EUR`;
         });
     }, 100);
