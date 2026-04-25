@@ -39,7 +39,6 @@ export function createMarketRegime(data) {
         const pctChange = (typeof kpi.pct_change === 'number') ? kpi.pct_change * 100 : 
                           (typeof kpi.pct_change_abs === 'number' ? kpi.pct_change_abs * 100 : 0);
         
-        // Literal interpretation: Positive = Green, Negative = Red
         const colorClass = pctChange >= 0 ? 'text-positive' : 'text-negative';
         const changeIcon = pctChange >= 0 ? '▲' : '▼';
 
@@ -48,8 +47,8 @@ export function createMarketRegime(data) {
                 <td class="analysis-table__cell analysis-table__cell--label">${label}</td>
                 <td class="analysis-table__cell">${formatVal(v2025, kpi.metric)}</td>
                 <td class="analysis-table__cell">${formatVal(v2026, kpi.metric)}</td>
-                <td class="analysis-table__cell analysis-table__cell--change ${colorClass}">
-                    <span class="change-badge">
+                <td class="analysis-table__cell analysis-table__cell--change">
+                    <span class="change-badge ${colorClass}">
                         ${changeIcon} ${Math.abs(pctChange).toFixed(1)}%
                     </span>
                 </td>
