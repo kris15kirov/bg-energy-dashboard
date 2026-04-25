@@ -146,7 +146,7 @@ function renderExplorer(container, meta) {
     container.appendChild(tableSection);
 
     // Initial render
-    updateView();
+    updateView(container);
 }
 
 // ── Filter Bar ───────────────────────────────────────
@@ -263,7 +263,7 @@ function createFilterBar() {
 
 // ── Update View ──────────────────────────────────────
 
-function updateView() {
+function updateView(root = document) {
     // Apply dropdown filters first
     let data = filterRecords(allRecords, filterState);
     // Then apply date range
@@ -271,24 +271,24 @@ function updateView() {
     filteredData = data;
 
     // Update filter info
-    const info = document.getElementById('hist-filter-info');
+    const info = root.querySelector('#hist-filter-info') || document.getElementById('hist-filter-info');
     if (info) {
         info.innerHTML = `<span class="hist-filter__count">${filteredData.length.toLocaleString()} records</span>`;
     }
 
-    updateStatsCards();
-    updatePriceChart();
-    updateHourlyChart();
-    updateMonthlyChart();
-    updateYoYChart();
-    updateWeeklyChart();
-    updateDataTable();
+    updateStatsCards(root);
+    updatePriceChart(root);
+    updateHourlyChart(root);
+    updateMonthlyChart(root);
+    updateYoYChart(root);
+    updateWeeklyChart(root);
+    updateDataTable(root);
 }
 
 // ── Stats Cards ──────────────────────────────────────
 
-function updateStatsCards() {
-    const container = document.getElementById('hist-stats');
+function updateStatsCards(root = document) {
+    const container = root.querySelector('#hist-stats') || document.getElementById('hist-stats');
     if (!container) return;
 
     const stats = computeStats(filteredData);
@@ -417,8 +417,8 @@ function baseTooltip(colors) {
 
 // ── Price Chart (with Rolling Averages) ──────────────
 
-function updatePriceChart() {
-    const canvas = document.getElementById('hist-price-chart');
+function updatePriceChart(root = document) {
+    const canvas = root.querySelector('#hist-price-chart') || document.getElementById('hist-price-chart');
     if (!canvas) return;
 
     if (priceChart) {
@@ -548,8 +548,8 @@ function updatePriceChart() {
 
 // ── Hourly Profile Chart ─────────────────────────────
 
-function updateHourlyChart() {
-    const canvas = document.getElementById('hist-hourly-chart');
+function updateHourlyChart(root = document) {
+    const canvas = root.querySelector('#hist-hourly-chart') || document.getElementById('hist-hourly-chart');
     if (!canvas) return;
 
     if (hourlyChart) {
@@ -617,8 +617,8 @@ function updateHourlyChart() {
 
 // ── Monthly Chart ────────────────────────────────────
 
-function updateMonthlyChart() {
-    const canvas = document.getElementById('hist-monthly-chart');
+function updateMonthlyChart(root = document) {
+    const canvas = root.querySelector('#hist-monthly-chart') || document.getElementById('hist-monthly-chart');
     if (!canvas) return;
 
     if (monthlyChart) {
@@ -716,8 +716,8 @@ function updateMonthlyChart() {
 
 const YOY_COLORS = ['#ff9f43', '#3b82f6', '#10b981', '#f43f5e', '#a855f7'];
 
-function updateYoYChart() {
-    const canvas = document.getElementById('hist-yoy-chart');
+function updateYoYChart(root = document) {
+    const canvas = root.querySelector('#hist-yoy-chart') || document.getElementById('hist-yoy-chart');
     if (!canvas) return;
 
     if (yoyChart) {
@@ -808,8 +808,8 @@ function updateYoYChart() {
 
 // ── Weekly Averages Chart ────────────────────────────
 
-function updateWeeklyChart() {
-    const canvas = document.getElementById('hist-weekly-chart');
+function updateWeeklyChart(root = document) {
+    const canvas = root.querySelector('#hist-weekly-chart') || document.getElementById('hist-weekly-chart');
     if (!canvas) return;
 
     if (weeklyChart) {
@@ -915,8 +915,8 @@ function updateWeeklyChart() {
 
 // ── Data Table (with Δ columns) ──────────────────────
 
-function updateDataTable() {
-    const section = document.getElementById('hist-table-section');
+function updateDataTable(root = document) {
+    const section = root.querySelector('#hist-table-section') || document.getElementById('hist-table-section');
     if (!section) return;
 
     const daily = dailyAveragesWithDelta(filteredData);
