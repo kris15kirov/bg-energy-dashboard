@@ -180,6 +180,7 @@
     flex-direction: column;
     overflow: hidden;
     min-width: 0;
+    max-width: 100%;
 }
 
 .content-scroll {
@@ -277,10 +278,10 @@
     }
 }
 
-/* Tablets (up to 1024px) */
-@media (max-width: 1024px) {
+/* Tablets (up to 1200px) */
+@media (max-width: 1200px) {
     .sidebar {
-        display: none; /* Hide sidebar on tablets and mobile */
+        display: none !important; /* Force hide sidebar on tablets and mobile */
     }
 
     .top-nav__logo span {

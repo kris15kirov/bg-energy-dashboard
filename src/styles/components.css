@@ -326,3 +326,14 @@
         display: none; /* Hide 'Export' text on mobile */
     }
 }
+
+/* ── Additional Mobile Tweaks ────────────────────────── */
+@media (max-width: 768px) {
+    .area-selector__neighbors {
+        flex-wrap: wrap;
+    }
+    
+    .filter-bar__section {
+        flex-wrap: wrap;
+    }
+}
