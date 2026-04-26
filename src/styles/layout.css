@@ -117,6 +117,45 @@
     transform: rotate(45deg);
 }
 
+/* ── Menu Toggle Button ────────────────────────────── */
+.menu-toggle-btn {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    border-radius: var(--border-radius-sm);
+    transition: all var(--transition-fast);
+}
+
+.menu-toggle-btn:hover {
+    background: var(--bg-hover);
+    color: var(--text-primary);
+}
+
+.sidebar-overlay {
+    position: fixed;
+    top: var(--nav-height);
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(2px);
+    z-index: 999;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--transition-base);
+}
+
+.sidebar-overlay--active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
 /* ── App Body (below nav) ────────────────────────────── */
 .app-body {
     display: flex;
@@ -281,11 +320,25 @@
 /* Tablets (up to 1200px) */
 @media (max-width: 1200px) {
     .sidebar {
-        display: none !important; /* Force hide sidebar on tablets and mobile */
+        position: fixed;
+        top: var(--nav-height);
+        left: -100%; /* Hide off-canvas */
+        height: calc(100vh - var(--nav-height));
+        z-index: 1000;
+        transition: left var(--transition-base);
+        box-shadow: var(--shadow-lg);
+    }
+
+    .sidebar--open {
+        left: 0 !important;
     }
 
     .top-nav__logo span {
         display: none; /* Hide text logo, keep icon */
+    }
+
+    .menu-toggle-btn {
+        display: flex !important;
     }
 }
 
@@ -322,4 +375,30 @@
     .trial-banner__expiry {
         text-align: left;
     }
+}
+
+/* ── Sidebar Mobile Header ───────────────────────────── */
+.sidebar__mobile-header {
+    display: none;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-md);
+    border-bottom: 1px solid var(--border-color);
+    background: var(--bg-secondary);
+}
+
+@media (max-width: 1200px) {
+    .sidebar__mobile-header {
+        display: flex;
+    }
+}
+
+.sidebar__close-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    font-size: 20px;
+    cursor: pointer;
+    padding: 4px;
+    line-height: 1;
 }

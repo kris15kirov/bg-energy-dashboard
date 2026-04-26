@@ -139,6 +139,27 @@ async function init() {
     body.appendChild(mainContentEl);
     app.appendChild(body);
 
+    // Sidebar Overlay (for mobile)
+    const overlay = document.createElement('div');
+    overlay.className = 'sidebar-overlay';
+    overlay.id = 'sidebar-overlay';
+    document.body.appendChild(overlay);
+
+    // Mobile Menu Toggle
+    const menuToggle = document.getElementById('menu-toggle');
+    if (menuToggle) {
+        menuToggle.addEventListener('click', () => {
+            sidebarEl.classList.toggle('sidebar--open');
+            overlay.classList.toggle('sidebar-overlay--active');
+        });
+    }
+
+    // Close on overlay click
+    overlay.addEventListener('click', () => {
+        sidebarEl.classList.remove('sidebar--open');
+        overlay.classList.remove('sidebar-overlay--active');
+    });
+
     // Initial data load
     console.log('[Main] Initializing data services...');
     await dataService.initLiveData();
@@ -162,6 +183,12 @@ function navigateTo(viewId) {
     state.activeView = viewId;
     state.activeTab = 'forecasts';
     updateSidebarActive(sidebarEl, viewId);
+    
+    // Close mobile menu if open
+    sidebarEl.classList.remove('sidebar--open');
+    const overlay = document.getElementById('sidebar-overlay');
+    if (overlay) overlay.classList.remove('sidebar-overlay--active');
+    
     renderView();
 }
 

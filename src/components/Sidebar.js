@@ -8,6 +8,20 @@ export function createSidebar(activeId, onNavigate) {
     const sidebar = document.createElement('aside');
     sidebar.className = 'sidebar';
 
+    // Mobile Header
+    const mobileHeader = document.createElement('div');
+    mobileHeader.className = 'sidebar__mobile-header';
+    mobileHeader.innerHTML = `
+        <span style="font-weight: bold; font-size: 0.9rem; color: var(--text-heading)">Menu</span>
+        <button class="sidebar__close-btn" title="Close Menu">✕</button>
+    `;
+    mobileHeader.querySelector('.sidebar__close-btn').addEventListener('click', () => {
+        sidebar.classList.remove('sidebar--open');
+        const overlay = document.getElementById('sidebar-overlay');
+        if (overlay) overlay.classList.remove('sidebar-overlay--active');
+    });
+    sidebar.appendChild(mobileHeader);
+
     for (const group of SIDEBAR_NAV) {
         const groupEl = document.createElement('div');
         groupEl.className = 'sidebar__group';
