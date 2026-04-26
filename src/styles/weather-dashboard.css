@@ -12,9 +12,9 @@
 }
 
 .weather-card {
-    background-color: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-md);
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
     padding: 1.5rem;
     text-align: center;
     box-shadow: var(--shadow-sm);
@@ -41,7 +41,7 @@
 .weather-card__val {
     font-size: var(--fs-2xl);
     font-weight: 700;
-    color: var(--text);
+    color: var(--text-primary);
     margin-bottom: 0.25rem;
 }
 
@@ -57,9 +57,9 @@
 }
 
 .chart-box {
-    background-color: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-md);
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
     padding: 1.5rem;
 }
 
@@ -67,7 +67,7 @@
     font-size: var(--fs-lg);
     font-weight: 600;
     margin-bottom: 1rem;
-    color: var(--text);
+    color: var(--text-primary);
 }
 
 .chart-box__subtitle {
@@ -82,7 +82,7 @@
     align-items: flex-end;
     gap: 2px;
     height: 150px;
-    border-bottom: 1px solid var(--border);
+    border-bottom: 1px solid var(--border-color);
     padding-bottom: 4px;
 }
 
@@ -98,9 +98,9 @@
 }
 
 .weather-heatmap-wrap {
-    background-color: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-md);
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
     padding: 1.5rem;
 }
 
@@ -123,7 +123,7 @@
     opacity: 0.8;
 }
 
-.heat-cell--normal { background-color: var(--surface-hover); }
+.heat-cell--normal { background-color: var(--bg-hover); }
 .heat-cell--sunny  { background-color: #fcd34d; }
 .heat-cell--extreme{ background-color: #f87171; }
 .heat-cell--wind   { background-color: #7dd3fc; }

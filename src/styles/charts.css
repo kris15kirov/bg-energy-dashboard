@@ -248,64 +248,6 @@
     color: var(--color-negative);
 }
 
-/* ── Footer ───────────────────────────────────────────── */
-.app-footer {
-    border-top: 1px solid var(--border-color);
-    background: var(--bg-secondary);
-    padding: var(--space-md) var(--space-lg);
-    margin-top: var(--space-2xl);
-}
-
-.app-footer__schedule-title {
-    font-size: var(--fs-xs);
-    color: var(--text-muted);
-    margin-bottom: var(--space-sm);
-}
-
-.app-footer__schedule {
-    display: flex;
-    align-items: center;
-    height: 40px;
-    background: var(--bg-card);
-    border-radius: var(--border-radius-sm);
-    margin-bottom: var(--space-md);
-    padding: 0 var(--space-sm);
-    gap: 2px;
-    position: relative;
-}
-
-.schedule-block {
-    height: 10px;
-    border-radius: 2px;
-    min-width: 20px;
-}
-
-.schedule-block--red {
-    background: var(--color-negative);
-}
-
-.schedule-block--blue {
-    background: var(--accent-gfs);
-}
-
-.schedule-block--green {
-    background: var(--accent-iconsr);
-}
-
-.app-footer__links {
-    display: flex;
-    gap: var(--space-lg);
-}
-
-.app-footer__link {
-    font-size: var(--fs-xs);
-    color: var(--text-secondary);
-    transition: color var(--transition-fast);
-}
-
-.app-footer__link:hover {
-    color: var(--text-primary);
-}
 /* ── Mobile Tweaks ───────────────────────────────────── */
 @media (max-width: 1200px) {
     .commentary {

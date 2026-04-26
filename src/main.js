@@ -28,6 +28,7 @@ import { createHistoricalExplorer } from './components/HistoricalExplorer.js';
 import { createMarketRegime } from './components/MarketRegime.js';
 import { createBatteryArbitrage } from './components/BatteryArbitrage.js';
 import { createInsightPanel } from './components/InsightPanel.js';
+import { createFooter } from './components/Footer.js';
 import { DataService } from './data/dataService.js';
 import { loadAnalysisData } from './data/analysisDataService.js';
 import { CHART_CONFIGS, MODELS } from './data/constants.js';
@@ -203,7 +204,7 @@ function handleFilterChange(changes) {
 
 // ── Render Views ─────────────────────────────────────
 
-function renderView() {
+async function renderView() {
     let tabsContainer = document.getElementById('content-tabs');
     let scrollArea = document.getElementById('content-scroll');
     let filterBar = mainContentEl.querySelector('.filter-bar');
@@ -248,16 +249,19 @@ function renderView() {
     } else if (state.activeView === 'historical-explorer') {
         tabsContainer.style.display = 'none';
         if (filterBar) filterBar.style.display = 'none';
-        renderHistoricalExplorer(scrollArea);
+        await renderHistoricalExplorer(scrollArea);
     } else if (state.activeView === 'analysis-suite') {
         tabsContainer.style.display = 'none';
         if (filterBar) filterBar.style.display = 'none';
         renderAnalysisSuite(scrollArea);
     } else if (state.activeView === 'qh-monthly-stats') {
-        renderQHMonthlyStats(tabsContainer, scrollArea);
+        await renderQHMonthlyStats(tabsContainer, scrollArea);
     } else {
         renderFundamentalDetail(tabsContainer, scrollArea);
     }
+
+    // Footer (scrolls with content)
+    scrollArea.appendChild(createFooter());
 }
 
 // ── Overview Page ────────────────────────────────────
