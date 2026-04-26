@@ -3,18 +3,19 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite --host 0.0.0.0 --port ${PORT:-5173}",
+    "dev": "vite",
     "server": "node server/proxy.js",
-    "start": "concurrently \"npm run dev\" \"npm run server\"",
     "build": "vite build",
+    "start": "node server/proxy.js",
     "preview": "vite preview"
   },
   "dependencies": {
     "chart.js": "^4.4.0",
     "chartjs-adapter-date-fns": "^3.0.0",
     "concurrently": "^9.2.1",
+    "cors": "^2.8.6",
     "date-fns": "^3.0.0",
+    "express": "^5.2.1",
     "vite": "^6.0.0"
-  },
-  "devDependencies": {}
+  }
 }

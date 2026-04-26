@@ -1,28 +1,25 @@
 // ═══════════════════════════════════════════════════════
-// BG Energy Dashboard — IBEX Proxy Server
-// Fetches DAM data from ibex.bg and serves it to the
-// frontend, bypassing CORS restrictions.
-//
-// IBEX API flow:
-//   1. GET csrf_token endpoint (with Referer header)
-//      → returns JSON {csrf_token} + sets PHPSESSID cookie
-//   2. GET get_data endpoint (with Referer + PHPSESSID cookie)
-//      → returns JSON {main_data[], summary_data, ph_data}
+// BG Energy Dashboard — Production Proxy & Static Server
 // ═══════════════════════════════════════════════════════
 
-import http from 'node:http';
+import express from 'express';
+import cors from 'cors';
 import https from 'node:https';
 import { readFileSync, existsSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
+const app = express();
+const PORT = process.env.PORT || 3001;
 
-const PORT = 3001;
 const IBEX_API = 'https://ibex.bg/Ext/SDAC_PROD/DAM_Page/api.php';
 const REFERER = 'https://ibex.bg/sdac-pv-en/';
 
-// ── Local JSON Cache (Variant B Fallback) ──────────
+app.use(cors());
+app.use(express.json());
+
+// ── Local JSON Cache (Fallback) ──────────────────────
 let localCache = new Map();
 try {
     const jsonPath = join(__dirname, 'ibex-qh-data.json');
@@ -40,15 +37,13 @@ try {
     console.warn(`[Proxy] Failed to load ibex-qh-data.json: ${err.message}`);
 }
 
-// ── Session State ────────────────────────────────────
-
+// ── IBEX Session State ───────────────────────────────
 let sessionCookie = null;
 let csrfToken = null;
 let sessionCreated = 0;
-const SESSION_TTL = 8 * 60 * 1000; // 8 minutes
+const SESSION_TTL = 8 * 60 * 1000;
 
 // ── HTTP helpers ─────────────────────────────────────
-
 function httpsRequest(url, extraHeaders = {}) {
     return new Promise((resolve, reject) => {
         const req = https.get(url, {
@@ -72,45 +67,23 @@ function httpsRequest(url, extraHeaders = {}) {
     });
 }
 
-// ── IBEX Auth ────────────────────────────────────────
-
 async function initSession() {
     console.log('[IBEX] Initializing session...');
-
-    // Single call to get both the PHPSESSID cookie and the CSRF token
     const res = await httpsRequest(`${IBEX_API}?action=get_csrf_token`);
-
-    // Extract PHPSESSID from set-cookie header
     const cookies = res.headers['set-cookie'];
     if (cookies) {
         const cookieArr = Array.isArray(cookies) ? cookies : [cookies];
         for (const c of cookieArr) {
             const match = c.match(/PHPSESSID=([^;]+)/);
-            if (match) {
-                sessionCookie = `PHPSESSID=${match[1]}`;
-                break;
-            }
+            if (match) { sessionCookie = `PHPSESSID=${match[1]}`; break; }
         }
     }
-
-    if (!sessionCookie) {
-        throw new Error('No PHPSESSID in response headers');
-    }
-
-    // Parse the CSRF token
-    let data;
-    try {
-        data = JSON.parse(res.body);
-    } catch {
-        throw new Error(`Non-JSON CSRF response: ${res.body.slice(0, 200)}`);
-    }
-
+    if (!sessionCookie) throw new Error('No PHPSESSID in response headers');
+    let data = JSON.parse(res.body);
     if (data.error) throw new Error(`CSRF error: ${data.error}`);
-    if (!data.csrf_token) throw new Error('No csrf_token in response');
-
     csrfToken = data.csrf_token;
     sessionCreated = Date.now();
-    console.log(`[IBEX] Session ready — cookie: ${sessionCookie.slice(0, 25)}..., token: ${csrfToken.slice(0, 16)}...`);
+    console.log(`[IBEX] Session ready`);
 }
 
 async function ensureSession() {
@@ -121,162 +94,114 @@ async function ensureSession() {
     }
 }
 
-// ── Fetch DAM data ───────────────────────────────────
-
 async function fetchDAMData(date, lang = 'en', retried = false) {
     await ensureSession();
-
     const url = `${IBEX_API}?action=get_data&csrf_token=${encodeURIComponent(csrfToken)}&date=${date}&lang=${lang}`;
     const res = await httpsRequest(url, { 'Cookie': sessionCookie });
-
-    let data;
-    try {
-        data = JSON.parse(res.body);
-    } catch {
-        throw new Error(`Non-JSON data response for ${date}: ${res.body.slice(0, 200)}`);
-    }
-
-    // If token expired, retry once with a fresh session
+    let data = JSON.parse(res.body);
     if (data.error && !retried) {
-        console.warn(`[IBEX] Error for ${date}: ${data.error} — refreshing session...`);
         sessionCookie = null;
         csrfToken = null;
         return fetchDAMData(date, lang, true);
     }
-
-    if (data.error) {
-        throw new Error(`IBEX error for ${date}: ${data.error}`);
-    }
-
+    if (data.error) throw new Error(`IBEX error: ${data.error}`);
     return data;
 }
 
-// ── Cache ────────────────────────────────────────────
-
-const cache = new Map();
-const CACHE_TTL = 5 * 60 * 1000;
+// ── In-Memory API Cache ──────────────────────────────
+const apiCache = new Map();
+const API_CACHE_TTL = 5 * 60 * 1000;
 
 function getCached(key) {
-    const e = cache.get(key);
-    return (e && Date.now() - e.ts < CACHE_TTL) ? e.data : null;
+    const e = apiCache.get(key);
+    return (e && Date.now() - e.ts < API_CACHE_TTL) ? e.data : null;
 }
-function setCache(key, data) { cache.set(key, { data, ts: Date.now() }); }
+function setCache(key, data) { apiCache.set(key, { data, ts: Date.now() }); }
 
-// ── HTTP Server ──────────────────────────────────────
+// ── API Routes ───────────────────────────────────────
 
-const server = http.createServer(async (req, res) => {
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-    if (req.method === 'OPTIONS') { res.writeHead(204); res.end(); return; }
-
-    const url = new URL(req.url, `http://localhost:${PORT}`);
-
-    // Health
-    if (url.pathname === '/api/health') {
-        res.writeHead(200, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ status: 'ok', ts: new Date().toISOString() }));
-        return;
-    }
-
-    // Single day
-    if (url.pathname === '/api/dam') {
-        const date = url.searchParams.get('date');
-        if (!date || !/^\d{4}-\d{2}-\d{2}$/.test(date)) {
-            res.writeHead(400, { 'Content-Type': 'application/json' });
-            res.end(JSON.stringify({ error: 'Invalid date (YYYY-MM-DD)' }));
-            return;
-        }
-        try {
-            let data = getCached(`dam_${date}`);
-            if (!data) {
-                console.log(`[IBEX] Fetching ${date}...`);
-                try {
-                    data = await fetchDAMData(date);
-                    setCache(`dam_${date}`, data);
-                } catch (fetchErr) {
-                    console.warn(`[IBEX] Fetch failed for ${date}: ${fetchErr.message}`);
-                    if (localCache.has(date)) {
-                        console.log(`[IBEX] 🧠 Using local fallback for ${date}`);
-                        data = localCache.get(date);
-                    } else {
-                        throw fetchErr;
-                    }
-                }
-            }
-            res.writeHead(200, { 'Content-Type': 'application/json' });
-            res.end(JSON.stringify(data));
-        } catch (err) {
-            console.error(`[IBEX] Error:`, err.message);
-            res.writeHead(502, { 'Content-Type': 'application/json' });
-            res.end(JSON.stringify({ error: err.message }));
-        }
-        return;
-    }
-
-    // Date range
-    if (url.pathname === '/api/dam/range') {
-        const from = url.searchParams.get('from');
-        const to = url.searchParams.get('to');
-        if (!from || !to) {
-            res.writeHead(400, { 'Content-Type': 'application/json' });
-            res.end(JSON.stringify({ error: 'Missing from/to' }));
-            return;
-        }
-        try {
-            const results = [];
-            const cur = new Date(from);
-            const end = new Date(to);
-            while (cur <= end) {
-                const d = cur.toISOString().split('T')[0];
-                let data = getCached(`dam_${d}`);
-                if (!data) {
-                    console.log(`[IBEX] Fetching ${d}...`);
-                    data = await fetchDAMData(d);
-                    setCache(`dam_${d}`, data);
-                    await new Promise(r => setTimeout(r, 150));
-                }
-                results.push({ date: d, ...data });
-                cur.setDate(cur.getDate() + 1);
-            }
-            res.writeHead(200, { 'Content-Type': 'application/json' });
-            res.end(JSON.stringify(results));
-        } catch (err) {
-            console.error(`[IBEX] Range error:`, err.message);
-            res.writeHead(502, { 'Content-Type': 'application/json' });
-            res.end(JSON.stringify({ error: err.message }));
-        }
-        return;
-    }
-
-    // Monthly QH stats (collected data)
-    if (url.pathname === '/api/ibex-monthly-stats') {
-        const jsonPath = join(__dirname, 'ibex-qh-data.json');
-        if (!existsSync(jsonPath)) {
-            res.writeHead(404, { 'Content-Type': 'application/json' });
-            res.end(JSON.stringify({ error: 'No collected data. Run: node server/collect-ibex-data.js' }));
-            return;
-        }
-        try {
-            const raw = readFileSync(jsonPath, 'utf-8');
-            res.writeHead(200, { 'Content-Type': 'application/json' });
-            res.end(raw);
-        } catch (err) {
-            res.writeHead(500, { 'Content-Type': 'application/json' });
-            res.end(JSON.stringify({ error: err.message }));
-        }
-        return;
-    }
-
-    res.writeHead(404, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ error: 'Not found' }));
+app.get('/api/health', (req, res) => {
+    res.json({ status: 'ok', ts: new Date().toISOString() });
 });
 
-server.listen(PORT, () => {
+app.get('/api/dam', async (req, res) => {
+    const date = req.query.date;
+    if (!date || !/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+        return res.status(400).json({ error: 'Invalid date (YYYY-MM-DD)' });
+    }
+
+    try {
+        let data = getCached(`dam_${date}`);
+        if (!data) {
+            console.log(`[IBEX] Fetching ${date}...`);
+            try {
+                data = await fetchDAMData(date);
+                setCache(`dam_${date}`, data);
+            } catch (fetchErr) {
+                console.warn(`[IBEX] Fetch failed for ${date}: ${fetchErr.message}`);
+                if (localCache.has(date)) {
+                    console.log(`[IBEX] 🧠 Using local fallback for ${date}`);
+                    data = localCache.get(date);
+                } else {
+                    throw fetchErr;
+                }
+            }
+        }
+        res.json(data);
+    } catch (err) {
+        res.status(502).json({ error: err.message });
+    }
+});
+
+app.get('/api/dam/range', async (req, res) => {
+    const { from, to } = req.query;
+    if (!from || !to) return res.status(400).json({ error: 'Missing from/to' });
+
+    try {
+        const results = [];
+        const cur = new Date(from);
+        const end = new Date(to);
+        while (cur <= end) {
+            const d = cur.toISOString().split('T')[0];
+            let data = getCached(`dam_${d}`);
+            if (!data) {
+                try {
+                    data = await fetchDAMData(d);
+                    setCache(`dam_${d}`, data);
+                } catch {
+                    if (localCache.has(d)) data = localCache.get(d);
+                }
+                if (data) await new Promise(r => setTimeout(r, 100));
+            }
+            if (data) results.push({ date: d, ...data });
+            cur.setDate(cur.getDate() + 1);
+        }
+        res.json(results);
+    } catch (err) {
+        res.status(502).json({ error: err.message });
+    }
+});
+
+app.get('/api/ibex-monthly-stats', (req, res) => {
+    const jsonPath = join(__dirname, 'ibex-qh-data.json');
+    if (!existsSync(jsonPath)) return res.status(404).json({ error: 'No data' });
+    res.sendFile(jsonPath);
+});
+
+// ── Static Files (Production) ────────────────────────
+const distPath = join(__dirname, '../dist');
+if (existsSync(distPath)) {
+    console.log(`[Proxy] Serving static files from ${distPath}`);
+    app.use(express.static(distPath));
+    app.use((req, res) => {
+        res.sendFile(join(distPath, 'index.html'));
+    });
+} else {
+    console.warn(`[Proxy] Warning: /dist folder not found. Run 'npm run build' first.`);
+}
+
+app.listen(PORT, () => {
     console.log(`\n╔══════════════════════════════════════════════╗`);
-    console.log(`║  IBEX Proxy Server running on port ${PORT}      ║`);
-    console.log(`║  GET /api/health                             ║`);
-    console.log(`║  GET /api/dam?date=YYYY-MM-DD                ║`);
-    console.log(`║  GET /api/dam/range?from=...&to=...          ║`);
+    console.log(`║  BG Energy Dashboard Server running on ${PORT}  ║`);
     console.log(`╚══════════════════════════════════════════════╝\n`);
 });
