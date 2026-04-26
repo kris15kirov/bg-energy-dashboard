@@ -11,7 +11,8 @@ A comprehensive, dark-themed Bulgarian energy market dashboard and analytics pip
 - 📉 **IBEX Analysis Suite** — Strategic insight layer including Market Regime Comparisons (2025 vs 2026), Battery Arbitrage Optimization tools (with efficiency modeling), and AI-driven decision support panels.
 - 🌤️ **Weather Dashboard** — Predictive 7-day visualizations utilizing Open-Meteo API, dynamic signal metric cards (Solar Surplus, Temp Spikes), and interactive calendar heatmaps. 
 - 📈 **Smart Overlays** — Correlation layers for price against Temperature (°C) or Solar Output (W/m²) dual axes.
-- 🎨 **Modern Dark Theme** — Responsive, high-performance UI using `Inter` typography and polished HSL color systems.
+- 🌓 **Dual-Theme Support** — Responsive, high-performance UI with a dynamic light/dark mode toggle and polished HSL color systems.
+- 🎨 **Modern Design** — Utilizes `Inter` typography, glassmorphism effects, and premium SVG iconography.
 
 ### 🐍 Backend Analytics Pipeline (Python)
 - 🔄 **Data Loading Engine** — Scrapes JSON and merges historical (2025/2026) Excel files cleanly through `src/data_loader.py`.
@@ -32,16 +33,19 @@ A comprehensive, dark-themed Bulgarian energy market dashboard and analytics pip
 # Install dependencies
 npm install
 
-# Run with live IBEX data (requires active internet access to IBEX)
+# Run Unified Production Server (Best for demo)
+# This serves the frontend and proxy from a single port (3001)
+npm run build
 npm start
 
-# Run frontend only (mock data fallback)
+# Run Development Server (Port 5173)
+# Uses mock data unless the proxy is running separately
 npm run dev
 
-# Run proxy server standalone
-npm run proxy
+# Run Proxy Server separately (Port 3001)
+npm run server
 ```
-> The dashboard will run on **http://localhost:5173/**
+> The production server runs on **http://localhost:3001/**, the dev server on **http://localhost:5173/**.
 
 ### 2. Python Analytics CLI
 Ensure you have `pandas` installed globally or in your virtual environment:
