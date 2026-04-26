@@ -2,38 +2,36 @@
    BG Energy Dashboard — UI Components
    ═══════════════════════════════════════════════════════ */
 
-/* ── Pill Toggle Buttons ──────────────────────────────── */
-.pill-group {
+/* ── Theme Toggle Button ────────────────────────────── */
+.theme-toggle-btn {
     display: flex;
     align-items: center;
-    gap: 2px;
-    background: var(--bg-card);
+    gap: var(--space-xs);
+    padding: 6px 12px;
+    background: transparent;
+    border: 1px solid var(--border-color);
     border-radius: var(--border-radius-pill);
-    padding: 2px;
-}
-
-.pill {
-    padding: 4px 12px;
+    color: var(--text-secondary);
     font-size: var(--fs-sm);
     font-weight: var(--fw-medium);
-    color: var(--pill-text);
-    border-radius: var(--border-radius-pill);
-    transition: all var(--transition-fast);
     cursor: pointer;
-    white-space: nowrap;
-    border: none;
-    background: transparent;
+    transition: all var(--transition-fast);
 }
 
-.pill:hover {
-    color: var(--text-primary);
+.theme-toggle-btn:hover {
     background: var(--bg-hover);
+    border-color: var(--border-light);
+    color: var(--text-primary);
 }
 
-.pill--active {
-    color: var(--pill-text-active);
-    background: var(--pill-bg-active);
-    box-shadow: var(--shadow-sm);
+.theme-toggle-icon {
+    display: flex;
+    align-items: center;
+    color: inherit;
+}
+
+.theme-toggle-text {
+    line-height: 1;
 }
 
 /* ── Model Toggle Pills (color-coded) ─────────────────── */

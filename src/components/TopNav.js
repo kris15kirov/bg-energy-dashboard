@@ -21,10 +21,10 @@ export function createTopNav() {
       `).join('')}
     </div>
     <div class="top-nav__right">
-      <div class="pill-group" id="theme-toggle" title="Toggle Theme">
-        <button class="pill" data-theme-val="light">Light</button>
-        <button class="pill" data-theme-val="dark">Dark</button>
-      </div>
+      <button id="theme-toggle" class="theme-toggle-btn" title="Toggle Theme">
+        <span class="theme-toggle-icon"></span>
+        <span class="theme-toggle-text"></span>
+      </button>
     </div>
   `;
 

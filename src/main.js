@@ -60,12 +60,23 @@ const applyTheme = (theme) => {
     document.documentElement.setAttribute('data-theme', theme);
     localStorage.setItem('theme', theme);
 
-    // Update Pill UI
-    const pillGroup = document.getElementById('theme-toggle');
-    if (pillGroup) {
-        pillGroup.querySelectorAll('.pill').forEach(btn => {
-            btn.classList.toggle('pill--active', btn.dataset.themeVal === theme);
-        });
+    // Update Theme Toggle UI
+    const themeToggle = document.getElementById('theme-toggle');
+    if (themeToggle) {
+        const icon = themeToggle.querySelector('.theme-toggle-icon');
+        const text = themeToggle.querySelector('.theme-toggle-text');
+        
+        if (theme === 'light') {
+            // In light mode, show "Dark" option with Moon icon
+            icon.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>`;
+            text.textContent = 'Dark';
+            themeToggle.dataset.nextTheme = 'dark';
+        } else {
+            // In dark mode, show "Light" option with Sun icon
+            icon.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>`;
+            text.textContent = 'Light';
+            themeToggle.dataset.nextTheme = 'light';
+        }
     }
     
     // Force charts to update for new CSS vars
@@ -89,10 +100,10 @@ async function init() {
     // Must be done after DOM insertion for elements to bind
     requestAnimationFrame(() => {
         applyTheme(savedTheme);
-        const pillGroup = document.getElementById('theme-toggle');
-        if (pillGroup) {
-            pillGroup.querySelectorAll('.pill').forEach(btn => {
-                btn.addEventListener('click', () => applyTheme(btn.dataset.themeVal));
+        const themeToggle = document.getElementById('theme-toggle');
+        if (themeToggle) {
+            themeToggle.addEventListener('click', () => {
+                applyTheme(themeToggle.dataset.nextTheme);
             });
         }
     });
