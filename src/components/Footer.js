@@ -62,7 +62,13 @@ export function createFooter() {
                         <span class="footer-item-value">Lilia Bocheva, Assoc. Prof. PhD</span>
                         <span class="footer-item-label">Director of department of Meteorology</span>
                         <span class="footer-item-label">National Institute of Meteorology and Hydrology</span>
-                        <a href="mailto:lilia.bocheva@meteo.bg" class="footer-item-value" style="font-size: var(--fs-xs); margin-top: 4px; opacity: 0.8;">lilia.bocheva@meteo.bg</a>
+                        <div class="footer-item" style="margin-top: 12px; align-items: flex-start;">
+                            <span class="footer-item-icon">✉️</span>
+                            <div class="footer-item-content">
+                                <span class="footer-item-label">Email</span>
+                                <a href="mailto:lilia.bocheva@meteo.bg" class="footer-item-value">lilia.bocheva@meteo.bg</a>
+                            </div>
+                        </div>
                     </div>
                     <a href="https://www.meteo.bg/" target="_blank" class="footer-collab-link">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
