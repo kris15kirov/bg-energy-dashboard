@@ -120,16 +120,25 @@
 /* ── Menu Toggle Button ────────────────────────────── */
 .menu-toggle-btn {
     display: none;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-    width: 36px;
-    height: 36px;
+    gap: 2px;
+    padding: 4px 8px;
     background: transparent;
     border: none;
     color: var(--text-secondary);
     cursor: pointer;
     border-radius: var(--border-radius-sm);
     transition: all var(--transition-fast);
+}
+
+.menu-toggle-label {
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 0.8px;
+    color: var(--color-bull);
+    line-height: 1;
 }
 
 .menu-toggle-btn:hover {
