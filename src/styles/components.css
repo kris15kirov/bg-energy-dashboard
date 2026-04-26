@@ -340,14 +340,15 @@
 
 /* ── App Footer ───────────────────────────────────────── */
 .app-footer {
-    background: linear-gradient(180deg, var(--bg-secondary) 0%, var(--bg-primary) 100%);
-    border-top: 1px solid var(--border-color);
-    padding: var(--space-2xl) var(--space-xl) var(--space-2xl);
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-lg);
+    padding: var(--space-xl);
     margin-top: var(--space-2xl);
-    margin-left: calc(-1 * var(--space-lg));
-    margin-right: calc(-1 * var(--space-lg));
+    margin-bottom: var(--space-2xl);
     color: var(--text-secondary);
     flex-shrink: 0;
+    box-shadow: var(--shadow-md);
 }
 
 .footer-content {
@@ -519,10 +520,9 @@ a.footer-item-value:hover {
 }
 
 .footer-bottom {
-    max-width: 1200px;
-    margin: var(--space-2xl) auto 0;
-    padding-top: var(--space-lg);
-    border-top: 1px solid var(--divider);
+    margin-top: var(--space-xl);
+    padding-top: var(--space-md);
+    border-top: 1px solid var(--border-color);
 }
 
 .footer-bottom-content {
