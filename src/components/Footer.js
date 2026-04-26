@@ -48,7 +48,7 @@ export function createFooter() {
                         </span>
                         <div class="footer-item-content">
                             <span class="footer-item-label">LinkedIn</span>
-                            <a href="https://www.linkedin.com/in/kristiyankirov15/" target="_blank" class="footer-item-value">Professional Profile</a>
+                            <a href="https://www.linkedin.com/in/kristiyankirov15/" target="_blank" class="footer-item-value">https://www.linkedin.com/in/kristiyankirov15/</a>
                         </div>
                     </li>
                 </ul>
