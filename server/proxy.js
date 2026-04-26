@@ -13,8 +13,8 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-const IBEX_API = 'https://ibex.bg/Ext/SDAC_PROD/DAM_Page/api.php';
-const REFERER = 'https://ibex.bg/sdac-pv-en/';
+const IBEX_PAGE = 'https://ibex.bg/sdac-mc-en/';
+const IBEX_API = 'https://ibex.bg/Ext/SDAC_PROD/MC_Table/api/get_data.php';
 
 app.use(cors());
 app.use(express.json());
@@ -37,21 +37,13 @@ try {
     console.warn(`[Proxy] Failed to load ibex-qh-data.json: ${err.message}`);
 }
 
-// ── IBEX Session State ───────────────────────────────
-let sessionCookie = null;
-let csrfToken = null;
-let sessionCreated = 0;
-const SESSION_TTL = 8 * 60 * 1000;
-
 // ── HTTP helpers ─────────────────────────────────────
-function httpsRequest(url, extraHeaders = {}) {
+function httpsRequest(url) {
     return new Promise((resolve, reject) => {
         const req = https.get(url, {
             headers: {
                 'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36',
                 'Accept': 'application/json, text/html, */*',
-                'Referer': REFERER,
-                ...extraHeaders,
             },
         }, (res) => {
             let body = '';
@@ -67,45 +59,98 @@ function httpsRequest(url, extraHeaders = {}) {
     });
 }
 
-async function initSession() {
-    console.log('[IBEX] Initializing session...');
-    const res = await httpsRequest(`${IBEX_API}?action=get_csrf_token`);
-    const cookies = res.headers['set-cookie'];
-    if (cookies) {
-        const cookieArr = Array.isArray(cookies) ? cookies : [cookies];
-        for (const c of cookieArr) {
-            const match = c.match(/PHPSESSID=([^;]+)/);
-            if (match) { sessionCookie = `PHPSESSID=${match[1]}`; break; }
-        }
-    }
-    if (!sessionCookie) throw new Error('No PHPSESSID in response headers');
-    let data = JSON.parse(res.body);
-    if (data.error) throw new Error(`CSRF error: ${data.error}`);
-    csrfToken = data.csrf_token;
+
+// ── IBEX Session State ───────────────────────────────
+let csrfToken = null;
+let sessionCreated = 0;
+const SESSION_TTL = 30 * 60 * 1000; // CSRF token usually lasts longer
+
+async function fetchToken() {
+    console.log('[IBEX] Fetching new CSRF token...');
+    const res = await httpsRequest(IBEX_PAGE);
+    const match = res.body.match(/const csrfToken = "([^"]+)"/);
+    if (!match) throw new Error('Could not find CSRF token in IBEX page');
+    csrfToken = match[1];
     sessionCreated = Date.now();
-    console.log(`[IBEX] Session ready`);
+    console.log(`[IBEX] Token acquired`);
 }
 
-async function ensureSession() {
-    if (!sessionCookie || !csrfToken || Date.now() - sessionCreated > SESSION_TTL) {
-        sessionCookie = null;
-        csrfToken = null;
-        await initSession();
+async function ensureToken() {
+    if (!csrfToken || Date.now() - sessionCreated > SESSION_TTL) {
+        await fetchToken();
     }
 }
 
-async function fetchDAMData(date, lang = 'en', retried = false) {
-    await ensureSession();
-    const url = `${IBEX_API}?action=get_data&csrf_token=${encodeURIComponent(csrfToken)}&date=${date}&lang=${lang}`;
-    const res = await httpsRequest(url, { 'Cookie': sessionCookie });
-    let data = JSON.parse(res.body);
-    if (data.error && !retried) {
-        sessionCookie = null;
-        csrfToken = null;
-        return fetchDAMData(date, lang, true);
+async function fetchDAMData(date, retried = false) {
+    // date is YYYY-MM-DD, convert to DD.MM.YYYY
+    const [y, m, d] = date.split('-');
+    const ibexDate = `${d}.${m}.${y}`;
+    
+    await ensureToken();
+    const url = `${IBEX_API}?date=${ibexDate}&csrf_token=${csrfToken}&rand=${Math.random()}`;
+    
+    try {
+        const res = await httpsRequest(url);
+        if (res.body.includes('Access denied')) throw new Error('Access Denied');
+        
+        const raw = JSON.parse(res.body);
+        if (!raw.data || !Array.isArray(raw.data)) throw new Error('Invalid API response structure');
+
+        // Map the new hourly format to the old QH format for frontend compatibility
+        const main_data = [];
+        let totalVolume = 0;
+        let totalPrice = 0;
+        let peakPrice = 0;
+        let peakCount = 0;
+        
+        raw.data.forEach((h, idx) => {
+            const price = parseFloat(h.bg_prices) || 0;
+            const volume = parseFloat(h.bg_volumes) || 0;
+            totalVolume += volume;
+            totalPrice += price;
+            
+            // Peak hours (08:00 - 20:00)
+            if (idx >= 8 && idx < 20) {
+                peakPrice += price;
+                peakCount++;
+            }
+
+            // Create 4 QH entries for each hour
+            for (let q = 1; q <= 4; q++) {
+                const qNum = idx * 4 + q;
+                const startMin = (q - 1) * 15;
+                const endMin = q * 15;
+                const period = `${String(idx).padStart(2, '0')}:${String(startMin).padStart(2, '0')} - ${String(q === 4 ? idx + 1 : idx).padStart(2, '0')}:${String(q === 4 ? '00' : endMin).padStart(2, '0')}`;
+                
+                main_data.push({
+                    product: `QH ${qNum}`,
+                    delivery_period: period,
+                    price: price.toFixed(2),
+                    volume: (volume / 4).toFixed(2)
+                });
+            }
+        });
+
+        const base_price = (totalPrice / 24).toFixed(2);
+        const peak_price = (peakPrice / peakCount).toFixed(2);
+        
+        return {
+            date,
+            main_data,
+            summary_data: {
+                base_price,
+                peak_price,
+                off_peak_price: ((totalPrice - peakPrice) / (24 - peakCount)).toFixed(2),
+                volume: totalVolume.toFixed(2)
+            }
+        };
+    } catch (err) {
+        if (!retried) {
+            csrfToken = null;
+            return fetchDAMData(date, true);
+        }
+        throw err;
     }
-    if (data.error) throw new Error(`IBEX error: ${data.error}`);
-    return data;
 }
 
 // ── In-Memory API Cache ──────────────────────────────
