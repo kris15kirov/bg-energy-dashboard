@@ -343,12 +343,11 @@
     background: linear-gradient(180deg, var(--bg-secondary) 0%, var(--bg-primary) 100%);
     border-top: 1px solid var(--border-color);
     padding: var(--space-2xl) var(--space-xl) var(--space-2xl);
-    margin-top: auto;
+    margin-top: var(--space-2xl);
     margin-left: calc(-1 * var(--space-lg));
     margin-right: calc(-1 * var(--space-lg));
     color: var(--text-secondary);
-    position: relative;
-    z-index: 1;
+    flex-shrink: 0;
 }
 
 .footer-content {
