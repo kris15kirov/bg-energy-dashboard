@@ -50,11 +50,20 @@ export class DataService {
                 return false;
             }
 
-            // Store the raw response for the latest day (for the IBEX table)
-            const lastDay = rawData[rawData.length - 1];
-            if (lastDay && lastDay.main_data) {
-                this._latestDAMRaw = lastDay;
-                this._deliveryDate = lastDay.date || formatDate(tomorrow);
+            // Find the latest day with actual data (search backwards from the end)
+            let latestDay = null;
+            for (let i = rawData.length - 1; i >= 0; i--) {
+                const day = rawData[i];
+                if (day && day.main_data && day.main_data.length > 0) {
+                    latestDay = day;
+                    break;
+                }
+            }
+
+            if (latestDay) {
+                this._latestDAMRaw = latestDay;
+                this._deliveryDate = latestDay.date;
+                console.log(`[DataService] Latest available IBEX delivery day: ${this._deliveryDate}`);
             }
 
             ibexSpotData = transformDAMToSpotSeries(rawData);

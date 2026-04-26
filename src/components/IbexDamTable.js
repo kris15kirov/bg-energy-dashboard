@@ -206,18 +206,35 @@ async function refreshIbexTable() {
     }
 
     try {
-        // Fetch tomorrow's data (day-ahead)
-        const tomorrow = new Date();
+        const now = new Date();
+        const tomorrow = new Date(now);
         tomorrow.setDate(tomorrow.getDate() + 1);
-        const dateStr = `${tomorrow.getFullYear()}-${String(tomorrow.getMonth() + 1).padStart(2, '0')}-${String(tomorrow.getDate()).padStart(2, '0')}`;
+        const today = new Date(now);
+        const yesterday = new Date(now);
+        yesterday.setDate(yesterday.getDate() - 1);
 
-        const data = await fetchDAMData(dateStr);
+        const formatDate = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+        
+        const datesToTry = [formatDate(tomorrow), formatDate(today), formatDate(yesterday)];
+        let success = false;
 
-        if (data && data.main_data) {
-            const newTable = createIbexDamTable(data, dateStr);
-            tableEl.replaceWith(newTable);
-            console.log(`[IBEX Table] Refreshed with ${data.main_data.length} entries for ${dateStr}`);
+        for (const dateStr of datesToTry) {
+            try {
+                console.log(`[IBEX Table] Trying to fetch data for ${dateStr}...`);
+                const data = await fetchDAMData(dateStr);
+                if (data && data.main_data && data.main_data.length > 0) {
+                    const newTable = createIbexDamTable(data, dateStr);
+                    tableEl.replaceWith(newTable);
+                    console.log(`[IBEX Table] Successfully refreshed with data for ${dateStr}`);
+                    success = true;
+                    break;
+                }
+            } catch (err) {
+                console.warn(`[IBEX Table] Failed for ${dateStr}:`, err.message);
+            }
         }
+
+        if (!success) throw new Error('No data found for the last 3 days');
     } catch (err) {
         console.warn('[IBEX Table] Refresh failed:', err.message);
         if (badge) {

@@ -25,7 +25,6 @@ export function createTopNav() {
         <button class="pill" data-theme-val="light">Light</button>
         <button class="pill" data-theme-val="dark">Dark</button>
       </div>
-      <button class="top-nav__settings" title="Settings">⚙</button>
     </div>
   `;
 
