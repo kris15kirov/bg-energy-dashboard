@@ -11,7 +11,7 @@ A state-of-the-art, high-performance Bulgarian energy market intelligence platfo
 - 📉 **Advanced Analysis Suite** — Strategic layer with Market Regime Comparisons (2025 vs 2026), Battery Arbitrage Optimization (with efficiency modeling), and algorithmic decision panels.
 - 🌤️ **Meteorological Forecasts** — 7-day predictive dashboard utilizing the Open-Meteo Forecast API, featuring Solar Surplus signals, Temperature spikes, and interactive heatmaps. 
 - 📈 **Dynamic Overlays** — Correlation layers allowing price comparison against Temperature (°C) or Solar Radiation (W/m²) on dual-axis charts.
-- 🌓 **Premium UI/UX** — High-contrast dark mode (and light mode) with a HSL-based design system, glassmorphism effects, and accessibility-compliant form fields.
+- 🌓 **Premium UI/UX** — High-contrast design system with a robust component-based architecture, card-styled contact modules, and accessible mobile navigation (with explicit menu labeling).
 
 ### 🐍 Backend Analytics Engine (Python)
 - 🔄 **Unified Pipeline** — Scrapes, cleans, and merges multi-year Excel datasets through `src/data_loader.py`.
