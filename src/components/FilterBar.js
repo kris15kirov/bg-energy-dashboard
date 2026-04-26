@@ -56,6 +56,7 @@ export function createFilterBar(state, onStateChange) {
 
     <!-- Currency -->
     <div class="filter-bar__section">
+      <label for="currency-select" class="visually-hidden">Select Currency</label>
       <select class="currency-select" id="currency-select" name="currency">
         <option value="EUR" selected>Local (EUR)</option>
       </select>

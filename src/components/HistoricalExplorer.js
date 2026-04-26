@@ -165,14 +165,14 @@ function createFilterBar() {
 
     bar.innerHTML = `
         <div class="hist-filter">
-            <label class="hist-filter__label">Year</label>
+            <label class="hist-filter__label" for="hist-filter-year">Year</label>
             <select class="hist-filter__select" id="hist-filter-year" name="year">
                 <option value="">All Years</option>
                 ${options.years.map(y => `<option value="${y}">${y}</option>`).join('')}
             </select>
         </div>
         <div class="hist-filter">
-            <label class="hist-filter__label">Quarter</label>
+            <label class="hist-filter__label" for="hist-filter-quarter">Quarter</label>
             <select class="hist-filter__select" id="hist-filter-quarter" name="quarter">
                 <option value="All">All Quarters</option>
                 <option value="Q1">Q1 (Jan–Mar)</option>
@@ -182,7 +182,7 @@ function createFilterBar() {
             </select>
         </div>
         <div class="hist-filter">
-            <label class="hist-filter__label">Month</label>
+            <label class="hist-filter__label" for="hist-filter-month">Month</label>
             <select class="hist-filter__select" id="hist-filter-month" name="month">
                 <option value="0">All Months</option>
                 ${options.months.map(m => `<option value="${m}">${MONTH_NAMES[m]}</option>`).join('')}
@@ -190,13 +190,13 @@ function createFilterBar() {
         </div>
         <div class="hist-filter__separator"></div>
         <div class="hist-filter">
-            <label class="hist-filter__label">From</label>
+            <label class="hist-filter__label" for="hist-filter-from">From</label>
             <input type="date" class="hist-filter__date" id="hist-filter-from" name="date-from"
                    value="${filterState.dateFrom ? fmtDate(filterState.dateFrom) : ''}"
                    min="${fmtDate(minDate)}" max="${fmtDate(maxDate)}" />
         </div>
         <div class="hist-filter">
-            <label class="hist-filter__label">To</label>
+            <label class="hist-filter__label" for="hist-filter-to">To</label>
             <input type="date" class="hist-filter__date" id="hist-filter-to" name="date-to"
                    value="${filterState.dateTo ? fmtDate(filterState.dateTo) : ''}"
                    min="${fmtDate(minDate)}" max="${fmtDate(maxDate)}" />
