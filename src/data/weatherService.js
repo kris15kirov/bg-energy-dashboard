@@ -22,7 +22,9 @@ export async function fetchWeatherRange(lat = 42.70, lon = 23.32, startDate, end
     const startStr = startDate.toISOString().split('T')[0];
     const endStr = endDate.toISOString().split('T')[0];
     
-    const url = `https://archive-api.open-meteo.com/v1/archive?latitude=${lat}&longitude=${lon}&start_date=${startStr}&end_date=${endStr}&hourly=temperature_2m,shortwave_radiation,cloudcover,windspeed_10m,precipitation&timezone=auto`;
+    // Use the Forecast API instead of Archive API because Archive doesn't allow future dates (400 error)
+    // The Forecast API also supports past data up to 92 days.
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&start_date=${startStr}&end_date=${endStr}&hourly=temperature_2m,shortwave_radiation,cloudcover,windspeed_10m,precipitation&timezone=auto`;
     
     try {
         const response = await fetch(url);
