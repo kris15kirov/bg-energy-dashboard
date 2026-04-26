@@ -263,3 +263,62 @@
     color: var(--text-muted);
     cursor: help;
 }
+/* ── Media Queries (Responsiveness) ──────────────────── */
+
+/* Tablets & Small Laptops (up to 1200px) */
+@media (max-width: 1200px) {
+    .content-with-sidebar {
+        flex-direction: column;
+    }
+
+    .content-with-sidebar .commentary-column {
+        width: 100%;
+        min-width: 100%;
+    }
+}
+
+/* Tablets (up to 1024px) */
+@media (max-width: 1024px) {
+    .sidebar {
+        display: none; /* Hide sidebar on tablets and mobile */
+    }
+
+    .top-nav__logo span {
+        display: none; /* Hide text logo, keep icon */
+    }
+}
+
+/* Mobile Devices (up to 768px) */
+@media (max-width: 768px) {
+    .top-nav {
+        padding: 0 var(--space-sm);
+    }
+
+    .top-nav__modules {
+        display: none; /* Hide top modules on mobile, rely on tabs */
+    }
+
+    .content-scroll {
+        padding: 0 var(--space-sm) var(--space-xl);
+    }
+
+    .content-tabs {
+        padding: 0 var(--space-sm);
+        overflow-x: auto;
+    }
+
+    .section-title {
+        font-size: var(--fs-lg);
+        padding: var(--space-md) 0 var(--space-sm);
+    }
+
+    .trial-banner {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--space-sm);
+    }
+
+    .trial-banner__expiry {
+        text-align: left;
+    }
+}

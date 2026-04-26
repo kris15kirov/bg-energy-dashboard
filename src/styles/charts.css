@@ -306,3 +306,10 @@
 .app-footer__link:hover {
     color: var(--text-primary);
 }
+/* ── Mobile Tweaks ───────────────────────────────────── */
+@media (max-width: 1200px) {
+    .commentary {
+        position: static;
+        margin-top: var(--space-lg);
+    }
+}

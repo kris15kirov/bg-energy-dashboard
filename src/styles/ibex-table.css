@@ -284,3 +284,9 @@
     font-size: var(--fs-sm);
     line-height: 1.6;
 }
+/* ── Mobile Tweaks ───────────────────────────────────── */
+@media (max-width: 768px) {
+    .ibex-table__summary {
+        grid-template-columns: 1fr;
+    }
+}

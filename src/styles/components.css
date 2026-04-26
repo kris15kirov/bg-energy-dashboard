@@ -307,3 +307,22 @@
     color: var(--text-muted);
     text-align: right;
 }
+/* ── Mobile Tweaks ───────────────────────────────────── */
+@media (max-width: 768px) {
+    .filter-bar {
+        gap: var(--space-sm);
+        padding: var(--space-sm);
+    }
+
+    .filter-bar__separator {
+        display: none;
+    }
+
+    .time-slider {
+        max-width: 100%;
+    }
+    
+    .archive-btn span {
+        display: none; /* Hide 'Export' text on mobile */
+    }
+}
