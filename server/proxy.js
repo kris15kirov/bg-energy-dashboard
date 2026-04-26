@@ -22,6 +22,24 @@ const PORT = 3001;
 const IBEX_API = 'https://ibex.bg/Ext/SDAC_PROD/DAM_Page/api.php';
 const REFERER = 'https://ibex.bg/sdac-pv-en/';
 
+// ── Local JSON Cache (Variant B Fallback) ──────────
+let localCache = new Map();
+try {
+    const jsonPath = join(__dirname, 'ibex-qh-data.json');
+    if (existsSync(jsonPath)) {
+        const raw = readFileSync(jsonPath, 'utf-8');
+        const parsed = JSON.parse(raw);
+        if (parsed.rawDays && Array.isArray(parsed.rawDays)) {
+            for (const d of parsed.rawDays) {
+                if (d.date) localCache.set(d.date, d);
+            }
+            console.log(`[Proxy] Loaded ${localCache.size} days from ibex-qh-data.json`);
+        }
+    }
+} catch (err) {
+    console.warn(`[Proxy] Failed to load ibex-qh-data.json: ${err.message}`);
+}
+
 // ── Session State ────────────────────────────────────
 
 let sessionCookie = null;
@@ -173,8 +191,18 @@ const server = http.createServer(async (req, res) => {
             let data = getCached(`dam_${date}`);
             if (!data) {
                 console.log(`[IBEX] Fetching ${date}...`);
-                data = await fetchDAMData(date);
-                setCache(`dam_${date}`, data);
+                try {
+                    data = await fetchDAMData(date);
+                    setCache(`dam_${date}`, data);
+                } catch (fetchErr) {
+                    console.warn(`[IBEX] Fetch failed for ${date}: ${fetchErr.message}`);
+                    if (localCache.has(date)) {
+                        console.log(`[IBEX] 🧠 Using local fallback for ${date}`);
+                        data = localCache.get(date);
+                    } else {
+                        throw fetchErr;
+                    }
+                }
             }
             res.writeHead(200, { 'Content-Type': 'application/json' });
             res.end(JSON.stringify(data));
