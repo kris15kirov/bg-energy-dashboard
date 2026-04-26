@@ -227,8 +227,6 @@
     overflow-y: auto;
     overflow-x: hidden;
     padding: 0 var(--space-lg) var(--space-2xl);
-    display: flex;
-    flex-direction: column;
 }
 
 /* ── Content with Right Sidebar ───────────────────────── */

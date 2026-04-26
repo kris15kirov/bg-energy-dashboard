@@ -340,14 +340,15 @@
 
 /* ── App Footer ───────────────────────────────────────── */
 .app-footer {
+    display: block;
+    clear: both;
     background: var(--bg-card);
     border: 1px solid var(--border-color);
     border-radius: var(--border-radius-lg);
     padding: var(--space-xl);
-    margin-top: var(--space-2xl);
+    margin-top: var(--space-3xl);
     margin-bottom: var(--space-2xl);
     color: var(--text-secondary);
-    flex-shrink: 0;
     box-shadow: var(--shadow-md);
 }
 
