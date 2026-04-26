@@ -29,7 +29,7 @@ export function createSidebar(activeId, onNavigate) {
         const label = document.createElement('div');
         label.className = 'sidebar__group-label';
         if (group.group === 'ANALYTICS') {
-            label.innerHTML = `${group.group} <b style="color:var(--text-heading);">(NEW)</b>`;
+            label.innerHTML = `${group.group} <b style="color:var(--color-bull);">(NEW)</b>`;
         } else {
             label.textContent = group.group;
         }
